@@ -8,6 +8,8 @@ import { sequencesRouter } from "./routes/sequences.js";
 import { cyclesRouter } from "./routes/cycles.js";
 import { spendRouter } from "./routes/spend.js";
 import { roadmapRouter } from "./routes/roadmap.js";
+import { meRouter } from "./routes/me.js";
+import { requestsRouter } from "./routes/requests.js";
 import { AUTOPILOT_REPO, NSP_STATE_DIR } from "./paths.js";
 
 const app = express();
@@ -29,6 +31,8 @@ app.use("/api/sequences", sequencesRouter);
 app.use("/api/cycles", cyclesRouter);
 app.use("/api/spend", spendRouter);
 app.use("/api/roadmap", roadmapRouter);
+app.use("/api/me", meRouter);
+app.use("/api/requests", requestsRouter);
 
 const port = Number(process.env.PORT ?? 4000);
 app.listen(port, () => {

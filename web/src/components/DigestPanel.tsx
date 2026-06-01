@@ -9,6 +9,7 @@ import { Skeleton } from "./ui/Skeleton";
 import { confirmDialog } from "./ui/Dialog";
 import { useToast } from "./ui/Toaster";
 import { api } from "../lib/api";
+import { useSession } from "../lib/session";
 import { absoluteFromIso, relativeFromIso } from "../lib/format";
 
 function outcomeBadge(outcome?: string) {
@@ -44,6 +45,7 @@ export function DigestPanel({
   niches: Niche[];
 }) {
   const { push } = useToast();
+  const { isOwner } = useSession();
   const [triggering, setTriggering] = useState(false);
   const counts = niches.reduce<Record<string, number>>((acc, n) => {
     acc[n.status] = (acc[n.status] ?? 0) + 1;
@@ -52,10 +54,11 @@ export function DigestPanel({
 
   const runNow = async () => {
     const ok = await confirmDialog({
-      title: "Run the orchestrator now?",
-      description:
-        "Same script the 10pm cron uses. Picks up the highest-priority queued niche (or brainstorms if the queue is empty). Takes a few minutes; a Telegram digest fires when it finishes.",
-      confirmLabel: "Run now",
+      title: isOwner ? "Run the orchestrator now?" : "Request an orchestrator run?",
+      description: isOwner
+        ? "Same script the 10pm cron uses. Picks up the highest-priority queued niche (or brainstorms if the queue is empty). Takes a few minutes; a Telegram digest fires when it finishes."
+        : "This sends a request to Nico. He approves it before anything runs or spends.",
+      confirmLabel: isOwner ? "Run now" : "Send request",
     });
     if (!ok) return;
     setTriggering(true);
@@ -134,7 +137,7 @@ export function DigestPanel({
             }
           >
             <Play size={12} />
-            {lockActive ? "Running…" : triggering ? "Starting…" : "Run now"}
+            {lockActive ? "Running…" : triggering ? (isOwner ? "Starting…" : "Requesting…") : isOwner ? "Run now" : "Request run"}
           </Button>
         </div>
         <div className="prose prose-sm flex-1 overflow-y-auto px-6 py-5">

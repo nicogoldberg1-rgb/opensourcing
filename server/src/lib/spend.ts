@@ -167,3 +167,26 @@ export async function getSpend(): Promise<SpendPayload> {
     },
   };
 }
+
+// Sum Inven export credits spent in the current week (Mon-based) from cycle
+// dirs. Used by the approval flow to surface the weekly cap.
+export async function getWeeklyInvenExport(): Promise<{ week_start: string; export: number }> {
+  const now = new Date();
+  const day = (now.getDay() + 6) % 7; // 0 = Monday
+  const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day, 0, 0, 0, 0);
+  let total = 0;
+  try {
+    const entries = await fs.readdir(CYCLE_DIRS_GLOB_ROOT);
+    for (const name of entries) {
+      const m = name.match(CYCLE_DIR_RE);
+      if (!m) continue;
+      const date = new Date(`${m[2]}T00:00:00`);
+      if (isNaN(date.getTime()) || date < weekStart) continue;
+      const spend = await readCycleSpend(path.join(CYCLE_DIRS_GLOB_ROOT, name));
+      total += spend.export;
+    }
+  } catch {
+    // ignore
+  }
+  return { week_start: weekStart.toISOString().slice(0, 10), export: total };
+}

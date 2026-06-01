@@ -1,9 +1,12 @@
 import type {
+  ActionRequest,
   CycleDetail,
   CycleSummary,
   NicheStatus,
   OrchestratorLastRun,
+  Me,
   Priorities,
+  RequestsPayload,
   RoadmapBoard,
   RoadmapCard,
   RoadmapColumn,
@@ -12,10 +15,28 @@ import type {
   Tracker,
 } from "./types";
 
+// Dev-only role preview: ?role=operator in the URL flips the whole UI to that
+// role (persisted for the tab). In production, Cloudflare Access sets the real
+// role server-side and this header is ignored when an authenticated email exists.
+function roleOverride(): string | null {
+  try {
+    const url = new URLSearchParams(window.location.search).get("role");
+    if (url) sessionStorage.setItem("nsp-role", url);
+    return sessionStorage.getItem("nsp-role");
+  } catch {
+    return null;
+  }
+}
+
 async function jsonFetch<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
+  const role = roleOverride();
   const res = await fetch(input, {
     ...init,
-    headers: { "content-type": "application/json", ...(init?.headers ?? {}) },
+    headers: {
+      "content-type": "application/json",
+      ...(role ? { "x-nsp-role": role } : {}),
+      ...(init?.headers ?? {}),
+    },
   });
   if (!res.ok) {
     let detail = "";
@@ -101,4 +122,16 @@ export const api = {
       "/api/niches/bulk/investigate",
       { method: "POST", body: JSON.stringify({ slugs }) },
     ),
+  getMe: () => jsonFetch<Me>("/api/me"),
+  getRequests: () => jsonFetch<RequestsPayload>("/api/requests"),
+  approveRequest: (id: string) =>
+    jsonFetch<{ ok: boolean; request: ActionRequest; result: { message?: string; error?: string } }>(
+      `/api/requests/${id}/approve`,
+      { method: "POST" },
+    ),
+  denyRequest: (id: string, note?: string) =>
+    jsonFetch<{ ok: true; request: ActionRequest }>(`/api/requests/${id}/deny`, {
+      method: "POST",
+      body: JSON.stringify({ note }),
+    }),
 };

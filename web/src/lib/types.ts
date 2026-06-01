@@ -260,3 +260,36 @@ export type OrchestratorLastRun = {
   } | null;
   lockActive: boolean;
 };
+
+export type Role = "owner" | "operator" | "viewer";
+
+export type Me = {
+  role: Role;
+  email: string | null;
+  source: string;
+  pending_requests: number;
+};
+
+export type RequestKind = "run-cycle" | "orchestrator";
+export type RequestStatus = "pending" | "approved" | "denied" | "executed" | "failed";
+
+export type ActionRequest = {
+  id: string;
+  kind: RequestKind;
+  slug?: string;
+  label: string;
+  requested_by: string;
+  requested_at: string;
+  note?: string;
+  status: RequestStatus;
+  decided_by?: string;
+  decided_at?: string;
+  decision_note?: string;
+  result_message?: string;
+};
+
+export type RequestsPayload = {
+  role: Role;
+  requests: ActionRequest[];
+  weekly_inven_export: { week_start: string; export: number } | null;
+};

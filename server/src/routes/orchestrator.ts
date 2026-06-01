@@ -1,73 +1,43 @@
 import { promises as fs } from "node:fs";
-import { spawn } from "node:child_process";
 import path from "node:path";
 import { Router } from "express";
-import {
-  AUTOPILOT_REPO,
-  ORCH_LOCK,
-  ORCH_LOGS_DIR,
-  ORCH_STATE_JSON,
-} from "../paths.js";
+import { ORCH_LOCK, ORCH_LOGS_DIR, ORCH_STATE_JSON } from "../paths.js";
+import { executeOrchestrator } from "../lib/executors.js";
+import { resolveIdentity } from "../lib/roles.js";
+import { createRequest } from "../lib/requests.js";
 
 export const orchestratorRouter = Router();
 
-orchestratorRouter.post("/trigger", async (_req, res) => {
-  // Refuse if a run is already in progress.
-  try {
-    const stat = await fs.stat(ORCH_LOCK);
-    const ageH = (Date.now() - stat.mtime.getTime()) / 3_600_000;
-    if (ageH < 4) {
-      res.status(409).json({
-        error: "run_in_progress",
-        message: `Orchestrator already running (lock held ${ageH.toFixed(1)}h ago).`,
-      });
+orchestratorRouter.post("/trigger", async (req, res) => {
+  const id = await resolveIdentity(req);
+
+  // Operators can't fire spend directly — their click becomes a request.
+  if (id.role !== "owner") {
+    if (id.role === "viewer") {
+      res.status(403).json({ error: "forbidden" });
       return;
     }
-  } catch {
-    // no lock — proceed
-  }
-
-  const script = path.join(AUTOPILOT_REPO, "bin/run-orchestrator.sh");
-  try {
-    await fs.access(script);
-  } catch {
-    res.status(500).json({ error: "script_not_found", path: script });
+    const request = await createRequest({
+      kind: "orchestrator",
+      label: "Run the nightly orchestrator now",
+      requested_by: id.email ?? "local",
+    });
+    res.json({
+      ok: true,
+      queued_for_approval: true,
+      request,
+      message: "Requested — Nico will approve the run from his inbox.",
+    });
     return;
   }
 
-  // Mirror the launchd plist's env so manual triggers run identically to nightly.
-  const env: NodeJS.ProcessEnv = {
-    ...process.env,
-    REPO_ROOT: AUTOPILOT_REPO,
-    CLAUDE_BIN:
-      process.env.CLAUDE_BIN ?? `${process.env.HOME}/.local/bin/claude`,
-    HOME: process.env.HOME ?? "",
-    PATH:
-      process.env.PATH ??
-      "/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
-    ORCH_MAX_NICHES: process.env.ORCH_MAX_NICHES ?? "1",
-    ORCH_BRAINSTORM_ONLY: process.env.ORCH_BRAINSTORM_ONLY ?? "false",
-    ORCH_TELEGRAM_CHAT_ID: process.env.ORCH_TELEGRAM_CHAT_ID ?? "8702070399",
-  };
-
-  try {
-    const child = spawn(script, [], {
-      env,
-      cwd: AUTOPILOT_REPO,
-      detached: true,
-      stdio: "ignore",
-    });
-    child.unref();
-    res.json({
-      ok: true,
-      pid: child.pid,
-      message:
-        "Orchestrator triggered. Check back in a few minutes — the digest will refresh when it finishes.",
-    });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    res.status(500).json({ error: "spawn_failed", message });
+  const result = await executeOrchestrator();
+  if (!result.ok) {
+    const code = result.error.includes("already running") ? 409 : 500;
+    res.status(code).json({ error: "orchestrator_failed", message: result.error });
+    return;
   }
+  res.json({ ok: true, pid: result.pid, message: result.message });
 });
 
 orchestratorRouter.get("/last-run", async (_req, res) => {

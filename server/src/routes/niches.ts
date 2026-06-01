@@ -5,6 +5,9 @@ import os from "node:os";
 import { Router } from "express";
 import { AUTOPILOT_REPO, NSP_STATE_DIR, TRACKER_JSON } from "../paths.js";
 import { addProposed, isValidStatus, setStatus } from "../lib/state-cli.js";
+import { executeRunCycle } from "../lib/executors.js";
+import { resolveIdentity } from "../lib/roles.js";
+import { createRequest } from "../lib/requests.js";
 
 function slugify(name: string): string {
   return name
@@ -255,21 +258,33 @@ nichesRouter.post("/:slug/investigate", async (req, res) => {
 
 nichesRouter.post("/:slug/run-cycle-now", async (req, res) => {
   const { slug } = req.params;
-  try {
-    const niche = await setStatus(slug, "queued", "manual run-cycle trigger from dashboard");
-    const triggerPath = path.join(NSP_STATE_DIR, `manual-trigger-${slug}.json`);
-    await fs.writeFile(
-      triggerPath,
-      JSON.stringify({ slug, triggered_at: new Date().toISOString() }, null, 2),
-    );
+  const id = await resolveIdentity(req);
+
+  // Operators request; owners execute.
+  if (id.role !== "owner") {
+    if (id.role === "viewer") {
+      res.status(403).json({ error: "forbidden" });
+      return;
+    }
+    const request = await createRequest({
+      kind: "run-cycle",
+      slug,
+      label: `Run a cycle on "${slug}"`,
+      requested_by: id.email ?? "local",
+    });
     res.json({
       ok: true,
-      niche,
-      message: `Queued. Run "/run-cycle ${slug}" in your Claude session to start it now, or wait for the 10pm fire.`,
-      trigger_file: triggerPath,
+      queued_for_approval: true,
+      request,
+      message: `Requested — Nico will approve the run on "${slug}".`,
     });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    res.status(500).json({ error: "run_cycle_trigger_failed", message });
+    return;
   }
+
+  const result = await executeRunCycle(slug);
+  if (!result.ok) {
+    res.status(500).json({ error: "run_cycle_failed", message: result.error });
+    return;
+  }
+  res.json({ ok: true, message: result.message });
 });
