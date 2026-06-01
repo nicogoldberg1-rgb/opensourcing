@@ -1,0 +1,275 @@
+import { promises as fs } from "node:fs";
+import { spawn } from "node:child_process";
+import path from "node:path";
+import os from "node:os";
+import { Router } from "express";
+import { AUTOPILOT_REPO, NSP_STATE_DIR, TRACKER_JSON } from "../paths.js";
+import { addProposed, isValidStatus, setStatus } from "../lib/state-cli.js";
+
+function slugify(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60);
+}
+
+export const nichesRouter = Router();
+
+nichesRouter.get("/", async (_req, res) => {
+  try {
+    const raw = await fs.readFile(TRACKER_JSON, "utf8");
+    res.json(JSON.parse(raw));
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: "failed_to_read_tracker", message });
+  }
+});
+
+nichesRouter.post("/", async (req, res) => {
+  const { name, notes } = req.body ?? {};
+  if (typeof name !== "string" || !name.trim()) {
+    res.status(400).json({ error: "name_required" });
+    return;
+  }
+  const cleanName = name.trim();
+  const baseSlug = slugify(cleanName);
+  if (!baseSlug) {
+    res.status(400).json({ error: "name_unslugifiable", name: cleanName });
+    return;
+  }
+
+  // Ensure unique slug
+  try {
+    const raw = await fs.readFile(TRACKER_JSON, "utf8");
+    const tracker = JSON.parse(raw) as {
+      industries: { id?: string; slug?: string }[];
+    };
+    const existing = new Set(
+      tracker.industries.map((n) => n.id ?? n.slug).filter(Boolean),
+    );
+    let slug = baseSlug;
+    let suffix = 2;
+    while (existing.has(slug)) {
+      slug = `${baseSlug}-${suffix++}`;
+    }
+
+    const cleanNotes = typeof notes === "string" ? notes.trim() : "";
+    // state.py's add-proposed always sets status=proposed; flip to seed after.
+    await addProposed(slug, cleanName, cleanNotes, "dashboard-manual");
+    const niche = await setStatus(slug, "seed", "added as seed via dashboard");
+    res.json({ ok: true, niche, slug });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: "add_seed_failed", message });
+  }
+});
+
+
+nichesRouter.post("/bulk/status", async (req, res) => {
+  const { slugs, status, reason } = req.body ?? {};
+  if (!Array.isArray(slugs) || slugs.length === 0 || !slugs.every((s) => typeof s === "string")) {
+    res.status(400).json({ error: "slugs_required" });
+    return;
+  }
+  if (typeof status !== "string" || !isValidStatus(status)) {
+    res.status(400).json({ error: "invalid_status", status });
+    return;
+  }
+  if (status === "rejected" && (!reason || typeof reason !== "string" || !reason.trim())) {
+    res.status(400).json({ error: "reason_required_for_rejection" });
+    return;
+  }
+  const results: { slug: string; ok: boolean; error?: string }[] = [];
+  for (const slug of slugs) {
+    try {
+      await setStatus(slug, status, reason);
+      results.push({ slug, ok: true });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      results.push({ slug, ok: false, error: message });
+    }
+  }
+  res.json({ results });
+});
+
+nichesRouter.post("/bulk/investigate", async (req, res) => {
+  const { slugs } = req.body ?? {};
+  if (!Array.isArray(slugs) || slugs.length === 0 || !slugs.every((s) => typeof s === "string")) {
+    res.status(400).json({ error: "slugs_required" });
+    return;
+  }
+  try {
+    const raw = await fs.readFile(TRACKER_JSON, "utf8");
+    const tracker = JSON.parse(raw) as {
+      industries: { id: string; slug?: string; name: string; notes?: string; status: string }[];
+    };
+    const targets = slugs.map((slug) => {
+      const n = tracker.industries.find((x) => x.id === slug || x.slug === slug);
+      if (!n) throw new Error(`niche_not_found: ${slug}`);
+      if (n.status !== "seed") throw new Error(`not_a_seed: ${slug} is ${n.status}`);
+      return n;
+    });
+    const claudeBin =
+      process.env.CLAUDE_BIN ?? path.join(os.homedir(), ".local/bin/claude");
+    try {
+      await fs.access(claudeBin);
+    } catch {
+      res.status(500).json({ error: "claude_bin_not_found", path: claudeBin });
+      return;
+    }
+    const items = targets
+      .map(
+        (n, i) =>
+          `${i + 1}. slug: ${n.id}  name: "${n.name}"  current notes: ${n.notes ?? "(none)"}`,
+      )
+      .join("\n");
+    const prompt = [
+      `Use the /industry-ideation skill in drill-down mode to develop ${targets.length} seed niches into proper proposed-level entries.`,
+      ``,
+      `Process them ONE AT A TIME, sequentially. Do not parallelize tracker writes.`,
+      ``,
+      `Seeds to investigate:`,
+      items,
+      ``,
+      `For each one, in order:`,
+      `1. Research the niche (web search, knowledge) — fragmentation, tailwinds, adjacencies, owner profile, search-fund fit.`,
+      `2. Generate: thesis, 4+1 scores (G/S/C/P/Q), tailwinds line, adjacencies, Inven-ready description, full buy_box block.`,
+      `3. Update the tracker entry at ~/Library/Application Support/nsp-autopilot/industry-tracker.json directly: set notes to the developed content, add the buy_box.`,
+      `4. Run: python3 ${path.join(AUTOPILOT_REPO, "lib/state.py")} set-status <slug> proposed --reason "investigated from seed via dashboard (bulk)"`,
+      `5. Move on to the next seed only after the current one is fully written and flipped.`,
+      ``,
+      `When all ${targets.length} are done, Telegram me a one-line summary listing what was promoted.`,
+      ``,
+      `Important: do not run /run-cycle, do not pull from Inven (no credits), do not contact anyone. Research + write notes only.`,
+    ].join("\n");
+    const env: NodeJS.ProcessEnv = {
+      ...process.env,
+      HOME: process.env.HOME ?? "",
+      PATH:
+        process.env.PATH ??
+        "/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    };
+    const child = spawn(
+      claudeBin,
+      ["--dangerously-skip-permissions", "-p", prompt],
+      { env, cwd: AUTOPILOT_REPO, detached: true, stdio: "ignore" },
+    );
+    child.unref();
+    res.json({
+      ok: true,
+      pid: child.pid,
+      count: targets.length,
+      message: `Investigating ${targets.length} seeds — Claude is researching them one at a time. Telegram will ping you when done.`,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: "bulk_investigate_failed", message });
+  }
+});
+
+nichesRouter.post("/:slug/status", async (req, res) => {
+  const { slug } = req.params;
+  const { status, reason } = req.body ?? {};
+  if (typeof status !== "string" || !isValidStatus(status)) {
+    res.status(400).json({ error: "invalid_status", status });
+    return;
+  }
+  if (status === "rejected" && !reason) {
+    res.status(400).json({ error: "reason_required_for_rejection" });
+    return;
+  }
+  try {
+    const niche = await setStatus(slug, status, reason);
+    res.json({ ok: true, niche });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: "state_cli_failed", message });
+  }
+});
+
+nichesRouter.post("/:slug/investigate", async (req, res) => {
+  const { slug } = req.params;
+  try {
+    // Look up the seed niche so we can pass its current name + notes as context
+    const raw = await fs.readFile(TRACKER_JSON, "utf8");
+    const tracker = JSON.parse(raw) as {
+      industries: { id: string; slug?: string; name: string; notes?: string; status: string }[];
+    };
+    const niche = tracker.industries.find((n) => n.id === slug || n.slug === slug);
+    if (!niche) {
+      res.status(404).json({ error: "niche_not_found", slug });
+      return;
+    }
+
+    const claudeBin =
+      process.env.CLAUDE_BIN ?? path.join(os.homedir(), ".local/bin/claude");
+    try {
+      await fs.access(claudeBin);
+    } catch {
+      res.status(500).json({ error: "claude_bin_not_found", path: claudeBin });
+      return;
+    }
+
+    const prompt = [
+      `Use the /industry-ideation skill in drill-down mode to develop the seed niche "${niche.name}" (slug: ${slug}) into a proper proposed-level entry.`,
+      ``,
+      `Current notes: ${niche.notes ?? "(none)"}`,
+      ``,
+      `Steps:`,
+      `1. Research the niche (web search, knowledge) — fragmentation, tailwinds, adjacencies, owner profile, search-fund fit.`,
+      `2. Write the structured output the skill normally produces: thesis, 4+1 scores (G/S/C/P/Q), tailwinds line, adjacencies, Inven-ready business description, and a complete buy_box block (with business_type if software).`,
+      `3. Update the tracker entry at ~/Library/Application Support/nsp-autopilot/industry-tracker.json directly: set notes to the developed content, add the buy_box, and persist any new fields.`,
+      `4. Then run: python3 ${path.join(AUTOPILOT_REPO, "lib/state.py")} set-status ${slug} proposed --reason "investigated from seed via dashboard"`,
+      `5. Telegram me a one-line confirmation when done.`,
+      ``,
+      `Important: do not run /run-cycle, do not pull from Inven (no credits), do not contact anyone. Research + write notes only.`,
+    ].join("\n");
+
+    const env: NodeJS.ProcessEnv = {
+      ...process.env,
+      HOME: process.env.HOME ?? "",
+      PATH:
+        process.env.PATH ??
+        "/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    };
+
+    const child = spawn(
+      claudeBin,
+      ["--dangerously-skip-permissions", "-p", prompt],
+      { env, cwd: AUTOPILOT_REPO, detached: true, stdio: "ignore" },
+    );
+    child.unref();
+    res.json({
+      ok: true,
+      pid: child.pid,
+      message: `Investigating "${niche.name}" — Claude is researching now. It'll flip to Proposed with rich notes when done (a few minutes). Telegram will ping you.`,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: "investigate_failed", message });
+  }
+});
+
+nichesRouter.post("/:slug/run-cycle-now", async (req, res) => {
+  const { slug } = req.params;
+  try {
+    const niche = await setStatus(slug, "queued", "manual run-cycle trigger from dashboard");
+    const triggerPath = path.join(NSP_STATE_DIR, `manual-trigger-${slug}.json`);
+    await fs.writeFile(
+      triggerPath,
+      JSON.stringify({ slug, triggered_at: new Date().toISOString() }, null, 2),
+    );
+    res.json({
+      ok: true,
+      niche,
+      message: `Queued. Run "/run-cycle ${slug}" in your Claude session to start it now, or wait for the 10pm fire.`,
+      trigger_file: triggerPath,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: "run_cycle_trigger_failed", message });
+  }
+});
