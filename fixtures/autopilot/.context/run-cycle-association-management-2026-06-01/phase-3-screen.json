@@ -1,0 +1,1 @@
+{"keep":["demo1.com","demo2.com"],"decisions":{"demo1.com":["KEEP","fits"],"drop1.com":["DROP","foreign"]}}

@@ -13,3 +13,7 @@ fixtures/nsp-state/industry-tracker.json
 
 # but DO track fixture logs (digest panel needs them)
 !fixtures/**/*.log
+
+# but DO track the fixture cycle dir (Live Cycle page needs it)
+!fixtures/autopilot/.context/
+!fixtures/autopilot/.context/**
