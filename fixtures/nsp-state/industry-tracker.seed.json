@@ -1,0 +1,151 @@
+{
+  "metadata": {
+    "search_start": "2025-10",
+    "principal": "Demo Operator",
+    "fund": "Demo Search Fund"
+  },
+  "industries": [
+    {
+      "id": "industrial-bakeries",
+      "slug": "industrial-bakeries",
+      "name": "Industrial Bakeries",
+      "status": "proposed",
+      "source": "dashboard-manual",
+      "notes": "Wholesale bread/roll producers serving regional grocery + foodservice.",
+      "proposed_at": "2026-06-01T22:25:36.602Z",
+      "history": [
+        {
+          "at": "2026-06-01T22:25:36.602Z",
+          "status": "proposed",
+          "reason": "investigated from seed (fixture)"
+        }
+      ]
+    },
+    {
+      "id": "marine-welding",
+      "slug": "marine-welding",
+      "name": "Marine Welding & Fabrication",
+      "status": "seed",
+      "source": "nico-seed",
+      "notes": "Dock and hull repair shops, aging owners.",
+      "proposed_at": "2026-05-27T10:00:00Z"
+    },
+    {
+      "id": "compliance-software",
+      "slug": "compliance-software",
+      "name": "Compliance Software",
+      "status": "proposed",
+      "source": "orchestrator-brainstorm",
+      "notes": "Vertical GRC SaaS for regulated industries. Tailwinds: rising regulatory burden, AI-flattening of horizontal GRC. 4+1: G5 S4 C5 P3 Q5.",
+      "scores": {
+        "growth": 5,
+        "size": 4,
+        "criticality": 5,
+        "penetration": 3,
+        "quality": 5
+      },
+      "proposed_at": "2026-05-21T10:00:00Z",
+      "adjacencies": [
+        "healthcare-compliance",
+        "financial-compliance"
+      ]
+    },
+    {
+      "id": "regulated-medical-waste",
+      "slug": "regulated-medical-waste",
+      "name": "Regulated Medical Waste Disposal",
+      "status": "proposed",
+      "source": "orchestrator-brainstorm",
+      "notes": "Route-based recurring sharps/biohazard collection. Tailwinds: outpatient care growth + tightening disposal rules. 4+1: G4 S4 C5 P4 Q4.",
+      "scores": {
+        "growth": 4,
+        "size": 4,
+        "criticality": 5,
+        "penetration": 4,
+        "quality": 4
+      },
+      "proposed_at": "2026-05-22T10:00:00Z"
+    },
+    {
+      "id": "court-reporting",
+      "slug": "court-reporting",
+      "name": "Court Reporting Agencies",
+      "status": "approved",
+      "source": "orchestrator-brainstorm",
+      "notes": "Stenographer-owned agencies serving law firms. AI-transcription attack vector. 4+1: G3 S4 C4 P4 Q3.",
+      "scores": {
+        "growth": 3,
+        "size": 4,
+        "criticality": 4,
+        "penetration": 4,
+        "quality": 3
+      },
+      "approved_at": "2026-05-23T10:00:00Z"
+    },
+    {
+      "id": "tpa-health-plans",
+      "slug": "tpa-health-plans",
+      "name": "TPAs for Self-Funded Health Plans",
+      "status": "approved",
+      "source": "orchestrator-brainstorm",
+      "notes": "Asset-light BPO on recurring PEPM fees. Tailwind: shift to self-funded plans. 4+1: G4 S4 C5 P4 Q4.",
+      "scores": {
+        "growth": 4,
+        "size": 4,
+        "criticality": 5,
+        "penetration": 4,
+        "quality": 4
+      },
+      "approved_at": "2026-05-24T10:00:00Z"
+    },
+    {
+      "id": "association-management",
+      "slug": "association-management",
+      "name": "Association Management Companies",
+      "status": "queued",
+      "source": "orchestrator-brainstorm",
+      "notes": "Outsourced back-office for trade associations. 4+1: G3 S4 C4 P4 Q4.",
+      "scores": {
+        "growth": 3,
+        "size": 4,
+        "criticality": 4,
+        "penetration": 4,
+        "quality": 4
+      },
+      "queued_at": "2026-05-25T10:00:00Z"
+    },
+    {
+      "id": "legal-case-mgmt",
+      "slug": "legal-case-mgmt",
+      "name": "Legal Case Management Software",
+      "status": "cycle_complete",
+      "source": "orchestrator-brainstorm",
+      "notes": "B2B SaaS, recurring revenue, compliance-heavy.",
+      "sequence_id": 9002,
+      "cycle_complete_at": "2026-04-10T10:00:00Z",
+      "scores": {
+        "growth": 4,
+        "size": 4,
+        "criticality": 5,
+        "penetration": 4,
+        "quality": 5
+      }
+    },
+    {
+      "id": "elevator-inspection",
+      "slug": "elevator-inspection",
+      "name": "Independent Elevator Inspection",
+      "status": "rejected",
+      "source": "orchestrator-brainstorm",
+      "notes": "Non-OEM elevator service.",
+      "rejected_at": "2026-05-22T18:54:00Z",
+      "history": [
+        {
+          "at": "2026-05-22T18:54:00Z",
+          "status": "rejected",
+          "reason": "not tech-forward enough"
+        }
+      ]
+    }
+  ]
+}

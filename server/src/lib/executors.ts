@@ -3,11 +3,15 @@ import { spawn } from "node:child_process";
 import path from "node:path";
 import { AUTOPILOT_REPO, NSP_STATE_DIR, ORCH_LOCK } from "../paths.js";
 import { setStatus } from "./state-cli.js";
+import { FIXTURE_MODE } from "../config.js";
 
 export type ExecResult = { ok: true; message: string; pid?: number } | { ok: false; error: string };
 
 // Spawn the same nightly orchestrator script launchd uses.
 export async function executeOrchestrator(): Promise<ExecResult> {
+  if (FIXTURE_MODE) {
+    return { ok: true, message: "[fixture] orchestrator run simulated — no real spawn." };
+  }
   // Refuse if a run is already in progress (lock < 4h old).
   try {
     const stat = await fs.stat(ORCH_LOCK);
@@ -55,6 +59,14 @@ export async function executeOrchestrator(): Promise<ExecResult> {
 // Queue a niche and drop a manual-trigger file (does not spawn — the actual
 // cycle runs when /run-cycle is invoked or the 10pm fire picks it up).
 export async function executeRunCycle(slug: string): Promise<ExecResult> {
+  if (FIXTURE_MODE) {
+    try {
+      await setStatus(slug, "queued", "fixture run-cycle");
+      return { ok: true, message: `[fixture] queued "${slug}" (no trigger file written).` };
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  }
   try {
     await setStatus(slug, "queued", "manual run-cycle trigger from dashboard");
     const triggerPath = path.join(NSP_STATE_DIR, `manual-trigger-${slug}.json`);

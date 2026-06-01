@@ -1,6 +1,7 @@
 import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { FIXTURE_MODE } from "../config.js";
 
 const LOB_BASE = "https://api.lob.com/v1";
 const CACHE_TTL_MS = 60_000;
@@ -118,6 +119,19 @@ async function fetchAllThisMonth(key: string): Promise<LobLetter[]> {
 }
 
 export async function getLobSummary(): Promise<LobSummary> {
+  if (FIXTURE_MODE) {
+    return {
+      configured: true,
+      mode: "test",
+      fetched_at: new Date().toISOString(),
+      this_month: { count: 12, total_usd: 0, avg_usd: null },
+      recent: [
+        { id: "ltr_demo1", to_name: "DEMO RECIPIENT", to_city: "Austin, TX", price_usd: 0, date_created: "2026-05-30T10:00:00Z", description: "fixture letter" },
+        { id: "ltr_demo2", to_name: "SAMPLE OWNER", to_city: "Columbus, OH", price_usd: 0, date_created: "2026-05-28T10:00:00Z", description: "fixture letter" },
+      ],
+      note: "[fixture] sample Lob data — no real API call.",
+    };
+  }
   if (cache && Date.now() - cache.at < CACHE_TTL_MS) return cache.value;
   const creds = await loadKey();
   const now = new Date().toISOString();

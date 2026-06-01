@@ -268,6 +268,7 @@ export type Me = {
   email: string | null;
   source: string;
   pending_requests: number;
+  fixture: boolean;
 };
 
 export type RequestKind = "run-cycle" | "orchestrator";

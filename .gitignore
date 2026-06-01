@@ -7,3 +7,9 @@ dist
 .context/
 server/data/
 
+
+# fixture tracker is mutated at runtime in fixture mode; reset from the .seed
+fixtures/nsp-state/industry-tracker.json
+
+# but DO track fixture logs (digest panel needs them)
+!fixtures/**/*.log

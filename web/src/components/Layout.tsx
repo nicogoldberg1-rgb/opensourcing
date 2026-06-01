@@ -93,6 +93,11 @@ export function Layout({
           )}
         </nav>
       </header>
+      {me?.fixture && (
+        <div className="shrink-0 bg-amber-100 px-6 py-1 text-center text-[11px] font-medium text-amber-800">
+          Fixture mode — demo data. Nothing here touches real autopilot state, APIs, or spend.
+        </div>
+      )}
       <Outlet context={context} />
     </div>
   );

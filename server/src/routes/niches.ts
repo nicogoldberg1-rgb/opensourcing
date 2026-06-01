@@ -8,6 +8,7 @@ import { addProposed, isValidStatus, setStatus } from "../lib/state-cli.js";
 import { executeRunCycle } from "../lib/executors.js";
 import { resolveIdentity } from "../lib/roles.js";
 import { createRequest } from "../lib/requests.js";
+import { FIXTURE_MODE } from "../config.js";
 
 function slugify(name: string): string {
   return name
@@ -115,6 +116,14 @@ nichesRouter.post("/bulk/investigate", async (req, res) => {
       if (n.status !== "seed") throw new Error(`not_a_seed: ${slug} is ${n.status}`);
       return n;
     });
+    if (FIXTURE_MODE) {
+      for (const n of targets) {
+        await setStatus(n.id, "proposed", "investigated from seed (fixture bulk)");
+      }
+      res.json({ ok: true, count: targets.length, message: `[fixture] Investigated ${targets.length} seeds → Proposed (simulated).` });
+      return;
+    }
+
     const claudeBin =
       process.env.CLAUDE_BIN ?? path.join(os.homedir(), ".local/bin/claude");
     try {
@@ -204,6 +213,13 @@ nichesRouter.post("/:slug/investigate", async (req, res) => {
     const niche = tracker.industries.find((n) => n.id === slug || n.slug === slug);
     if (!niche) {
       res.status(404).json({ error: "niche_not_found", slug });
+      return;
+    }
+
+    if (FIXTURE_MODE) {
+      const fakeNotes = `${niche.notes ?? ""}\n\n[fixture] Developed: fragmented market, aging owners, recurring revenue. Tailwinds: regulatory + demographic. 4+1: G4 S4 C4 P3 Q4.`.trim();
+      await setStatus(slug, "proposed", "investigated from seed (fixture)");
+      res.json({ ok: true, message: `[fixture] Investigated "${niche.name}" → Proposed (simulated, no Claude spawn).` });
       return;
     }
 

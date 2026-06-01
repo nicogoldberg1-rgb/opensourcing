@@ -1,6 +1,8 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { AUTOPILOT_REPO, STATE_PY } from "../paths.js";
+import { promises as fs } from "node:fs";
+import { AUTOPILOT_REPO, STATE_PY, TRACKER_JSON } from "../paths.js";
+import { FIXTURE_MODE } from "../config.js";
 
 const execFileP = promisify(execFile);
 
@@ -22,6 +24,54 @@ export function isValidStatus(s: string): boolean {
   return VALID_STATES.has(s);
 }
 
+// ---- Fixture-mode mutators: edit the bundled tracker JSON directly in JS.
+// No python, no real autopilot. Mirrors lib/state.py's shape closely enough
+// for the dashboard. Only used when NSP_FIXTURE_MODE=1.
+async function fixtureLoad(): Promise<{ industries: Record<string, unknown>[]; [k: string]: unknown }> {
+  const raw = await fs.readFile(TRACKER_JSON, "utf8");
+  return JSON.parse(raw);
+}
+async function fixtureSave(data: unknown): Promise<void> {
+  await fs.writeFile(TRACKER_JSON, JSON.stringify(data, null, 2));
+}
+function nowIso(): string {
+  return new Date().toISOString();
+}
+
+async function fixtureSetStatus(slug: string, newStatus: string, reason?: string) {
+  const data = await fixtureLoad();
+  const item = data.industries.find((n) => n.id === slug || n.slug === slug);
+  if (!item) throw new Error(`no niche with slug/id: ${slug}`);
+  item.status = newStatus;
+  item[`${newStatus}_at`] = nowIso();
+  if (reason) {
+    const hist = (item.history as unknown[]) ?? [];
+    hist.push({ at: nowIso(), status: newStatus, reason });
+    item.history = hist;
+  }
+  await fixtureSave(data);
+  return item;
+}
+
+async function fixtureAddProposed(slug: string, name: string, notes: string, source: string) {
+  const data = await fixtureLoad();
+  if (data.industries.find((n) => n.id === slug || n.slug === slug)) {
+    throw new Error(`slug already exists: ${slug}`);
+  }
+  const item = {
+    id: slug,
+    slug,
+    name,
+    status: "proposed",
+    proposed_at: nowIso(),
+    notes,
+    source,
+  };
+  data.industries.push(item);
+  await fixtureSave(data);
+  return item;
+}
+
 export async function setStatus(
   slug: string,
   newStatus: string,
@@ -30,6 +80,7 @@ export async function setStatus(
   if (!isValidStatus(newStatus)) {
     throw new Error(`invalid status: ${newStatus}`);
   }
+  if (FIXTURE_MODE) return fixtureSetStatus(slug, newStatus, reason);
   const args = ["lib/state.py", "set-status", slug, newStatus];
   if (reason) args.push("--reason", reason);
   const { stdout } = await execFileP("python3", args, {
@@ -52,6 +103,7 @@ export async function addProposed(
   notes: string,
   source: string,
 ): Promise<unknown> {
+  if (FIXTURE_MODE) return fixtureAddProposed(slug, name, notes, source);
   const args = [
     "lib/state.py",
     "add-proposed",
