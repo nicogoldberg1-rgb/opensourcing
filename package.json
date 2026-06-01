@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "concurrently -n server,web -c blue,magenta \"npm:dev -w server\" \"npm:dev -w web\"",
     "build": "npm run build -w server && npm run build -w web",
+    "start": "node server/dist/index.js",
     "dev:fixture": "npm run fixture:seed && NSP_FIXTURE_MODE=1 concurrently -n server,web -c blue,magenta \"NSP_FIXTURE_MODE=1 npm:dev -w server\" \"npm:dev -w web\"",
     "fixture:seed": "node -e \"const fs=require('fs');const s='fixtures/nsp-state/industry-tracker.seed.json',t='fixtures/nsp-state/industry-tracker.json';if(!fs.existsSync(t))fs.copyFileSync(s,t)\""
   },

@@ -1,0 +1,32 @@
+# Render blueprint for the PUBLIC FIXTURE DEMO of the NSP Autopilot dashboard.
+#
+# This deploys the dashboard in fixture mode ONLY: bundled fake data, no keys,
+# no external API calls, no Claude spawn, no spend. Safe to expose publicly.
+# NEVER point a Render service at real mode — that needs Nico's local files/keys
+# and can spend money.
+#
+# How it works: `npm run build` compiles the Express server (server/dist) and the
+# Vite frontend (web/dist). At boot, Express serves web/dist as static + handles
+# /api on a single port, so the whole app is one origin. `fixture:seed` copies the
+# committed industry-tracker.seed.json into the runtime tracker the API reads
+# (the runtime copy is gitignored, so it must be seeded on each fresh boot).
+services:
+  - type: web
+    name: nsp-dashboard-demo
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install && npm run build
+    startCommand: npm run fixture:seed && node server/dist/index.js
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NSP_FIXTURE_MODE
+        value: "1"
+      # Role demo visitors get by default. "owner" shows the full app including
+      # the spend-approval inbox. Switch to "operator" to show the intern view
+      # (spend buttons become "Request run"). Owner = the most complete showcase.
+      - key: NSP_DEFAULT_ROLE
+        value: owner
+      - key: NODE_VERSION
+        value: "22"
