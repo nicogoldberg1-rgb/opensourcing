@@ -11,6 +11,11 @@ The landing page links to the demo. Neither touches real data — the demo runs
 fixture mode only (fake data, no keys, no spend, no Claude). **Never deploy real
 mode to a public host.**
 
+> **Live status:** Landing page is **deployed** — `https://opensourcing.dev`
+> (Vercel project `opensourcing`, www → apex 308). **Render demo is NOT yet
+> connected** — that's the one remaining manual step (§1); until then the landing
+> page's "Open the demo" button 404s.
+
 ---
 
 ## 1. Live demo on Render (the dashboard, fixture mode)
@@ -48,30 +53,26 @@ Live cycle, Spend, Roadmap, Requests) has data. `…/api/health` returns
 
 ---
 
-## 2. Landing page on Vercel (`opensourcing.dev`)
+## 2. Landing page on Vercel (`opensourcing.dev`) — DONE
 
-The landing page is a single self-contained static file: `landing/index.html`
-(no build step). `opensourcing.dev` is already registered on Nico's Vercel.
+Already deployed via the Vercel CLI (no dashboard import needed):
+- Project: **`opensourcing`** (scope `nicos-projects-143561fc`), static, no build.
+- Production: `https://opensourcing.vercel.app`, custom domain
+  **`https://opensourcing.dev`** attached (verified), `www.opensourcing.dev` → apex
+  308 redirect.
 
-**One-time setup (Nico clicks):**
-1. <https://vercel.com> → **Add New** → **Project** → import
-   `nicogoldberg1-rgb/nsp-dashboard`.
-2. **IMPORTANT — set Root Directory to `landing`** (Project Settings → Build &
-   Output, or in the import screen). Framework Preset: **Other**. No build
-   command, no install command — it serves the static dir as-is.
-3. Deploy. Vercel gives a `*.vercel.app` URL first.
-4. **Attach the domain:** Project → **Settings → Domains** → add
-   `opensourcing.dev` (and `www.opensourcing.dev` → redirect to apex). Since the
-   domain is already on Nico's Vercel account, it attaches without DNS changes.
+**It is CLI-deployed, not Git-connected**, so pushes to `main` do NOT auto-redeploy
+the landing page. To ship a landing change:
+```bash
+cd landing && vercel deploy --prod --yes
+```
+(Or, if you'd rather have push-to-deploy: in the Vercel dashboard open the
+`opensourcing` project → Settings → Git, connect the GitHub repo, and set
+**Root Directory = `landing`**.)
 
-**Verify:** `https://opensourcing.dev` renders the hero + two cards; "Open the
-demo" goes to the Render URL; "View on GitHub" + the clone command resolve.
-
-> If you later move `opensourcing.dev`'s DNS to Cloudflare (for Handoff 2's
-> tunnel on `app.opensourcing.dev`), keep the apex/`www` records pointing at
-> Vercel — only the `app.` subdomain goes to the Cloudflare tunnel.
-
----
+**Verify:** `https://opensourcing.dev` renders the hero + two cards; "View on
+GitHub" + the clone command resolve. "Open the demo" only works once §1 (Render)
+is connected.
 
 ## 3. Optional: `demo.opensourcing.dev` → Render
 
@@ -87,9 +88,10 @@ Nicer than the raw `onrender.com` URL.
 ---
 
 ## Updating after first deploy
-Both hosts auto-deploy on push to `main`:
-- Push that touches `server/`, `web/`, or `render.yaml` → Render rebuilds the demo.
-- Push that touches `landing/` → Vercel redeploys the landing page.
+- **Demo (Render):** once connected, auto-deploys on push to `main` that touches
+  `server/`, `web/`, or `render.yaml`.
+- **Landing (Vercel):** CLI-deployed, so it does **not** auto-deploy. Redeploy with
+  `cd landing && vercel deploy --prod --yes` (or connect Git per §2).
 
 ## Local production smoke test (before pushing)
 ```bash
