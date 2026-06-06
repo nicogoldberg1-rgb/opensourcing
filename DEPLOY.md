@@ -50,6 +50,10 @@ Live cycle, Spend, Roadmap, Requests) has data. `…/api/health` returns
   restart — the demo self-resets from the committed seed on every boot. That's
   intended.
 - If a build ever fails on Node version, the blueprint pins `NODE_VERSION=22`.
+- **If the service shows "Running" but every request hangs / times out:** the
+  Blueprint may have created the service without kicking off a first build (it has
+  zero deploys + no logs). Fix: open the service → **Manual Deploy → Deploy latest
+  commit**. After one successful deploy, pushes to `main` auto-redeploy normally.
 
 ---
 
