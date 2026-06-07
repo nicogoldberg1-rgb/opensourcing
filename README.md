@@ -1,39 +1,173 @@
-# NSP Autopilot Dashboard
+# Open Sourcing by NSP
 
-Local web dashboard for Nico's search-fund outreach autopilot. Reads autopilot
-state files and shells out to `lib/state.py` for mutations. Runs on
-`localhost` — single user, no auth.
+**Searching on easy mode.** An end-to-end, multi-channel outreach system for
+search-fund entrepreneurs — niche ideation → company sourcing → screening →
+personalized email, LinkedIn, and physical mail — run by [Claude Code](https://claude.com/claude-code)
+agents, with a human approving every dollar of spend.
 
-## Run
+Spend your time on the things that actually move a search forward — talking to
+owners, diligencing deals, building industry theses — and leave the busywork to
+the agents.
+
+> Built by a searcher, for the searcher community.
+> _Open Sourcing_ is by [NSP (Nico's Search Partners)](https://partnerwithnico.com).
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+[![Live demo](https://img.shields.io/badge/demo-live-5b5bd6.svg)](https://nsp-dashboard-demo.onrender.com)
+[![Built with Claude Code](https://img.shields.io/badge/built%20with-Claude%20Code-d97757.svg)](https://claude.com/claude-code)
+
+---
+
+## Try the live demo
+
+**→ [nsp-dashboard-demo.onrender.com](https://nsp-dashboard-demo.onrender.com)**
+
+The demo runs in **fixture mode**: 100% fake sample data, no API keys, no spend,
+no agents spawned. Click everything freely. (It's on a free tier, so the first
+load after it's been idle can take ~30–50s to wake up.)
+
+Landing page: **[opensourcing.dev](https://opensourcing.dev)**
+
+---
+
+## What it does
+
+This is the **control surface** for an autonomous search-fund outreach pipeline.
+The pipeline itself is a set of Claude Code agents that take a niche thesis all
+the way to ready-to-send outreach:
+
+1. **Ideate** a niche and shape the company search.
+2. **Source** matching companies (via [Inven](https://inven.ai)) and **screen**
+   them against acquisition criteria.
+3. **Find** owner/CEO contacts and **personalize** the outreach.
+4. **Build** a multi-channel sequence — email + LinkedIn + physical
+   ([Lob](https://lob.com)) letters — staged with sensible cadence.
+
+The dashboard lets you watch and steer that pipeline: see live cycles, review
+what's queued, manage the roadmap, and — critically — **approve spend before it
+happens.**
+
+### Searching on easy mode
+
+- **End-to-end, multi-channel.** One pipeline from "I have a thesis" to "the
+  sequence is built and ready to send" across email, LinkedIn, and mail.
+- **Agent-run, human-steered.** Claude Code agents do the legwork; you make the
+  judgment calls.
+- **A human approves every dollar.** Operators (e.g. an intern) can take any
+  action up to "built and ready," but anything that *spends* — running a cycle,
+  exporting contacts, sending mail — becomes a request the owner approves in an
+  inbox. No agent and no teammate can spend money on its own.
+- **Safe to demo and develop.** Fixture mode swaps every external touchpoint for
+  canned data, so the whole app runs with zero keys and zero blast radius.
+
+> **Heads up:** today this is wired to the specific tools one searcher (me) uses —
+> Inven for sourcing, Reply.io for email sequencing, Lob for mail. It's open
+> sourced so others can see how the whole thing fits together and adapt it.
+> Making the templates and channels pluggable (bring your own) is on the
+> [roadmap](#roadmap).
+
+---
+
+## Run it locally (no keys needed)
 
 ```bash
-npm install            # installs root, web, and server (workspaces)
-npm run dev            # starts Express on :4000 and Vite on :5173
+git clone https://github.com/nicogoldberg1-rgb/nsp-dashboard.git
+cd nsp-dashboard
+npm install
+npm run dev:fixture
 ```
 
-Open <http://localhost:5173>.
+Open **http://localhost:5173** — you'll see an amber **"Fixture mode"** banner
+and a fully populated app. This is the same thing the live demo runs: fake data,
+no network calls, no spend, no agents.
 
-## Env
+Want to preview the limited "operator/intern" view? Add `?role=operator` (or
+`?role=viewer`) to the URL. Default is `owner`.
 
-A `.env` in `server/` (optional — sensible defaults if omitted):
+To run against a real autopilot instead of fixtures, see
+**[CONTRIBUTING.md](./CONTRIBUTING.md)** and **[DEPLOY.md](./DEPLOY.md)**.
+
+---
+
+## Architecture
 
 ```
-AUTOPILOT_REPO=/Users/nicolasgoldberg/conductor/workspaces/open-sourcing/porto
-NSP_STATE_DIR=/Users/nicolasgoldberg/Library/Application Support/nsp-autopilot
-REPLY_IO_API_KEY=...   # falls back to ~/.claude.json mcpServers["reply-io"]
-PORT=4000
+server/    Express + TypeScript. Reads autopilot state, calls Reply.io / Inven / Lob,
+           and exposes a small REST API under /api/*. One file per concern in src/lib,
+           one per endpoint group in src/routes. The fixture switch is src/config.ts.
+web/       Vite + React + TypeScript + Tailwind. Pages in src/pages, shared UI in
+           src/components, API client in src/lib/api.ts.
+fixtures/  Bundled fake data that powers fixture mode (the demo + local dev).
+landing/   Static landing page (opensourcing.dev).
 ```
 
-## Layout
+- **Roles.** `owner` / `operator` / `viewer`, resolved from an authenticated
+  email in production (or `?role=` locally). Operators are limited to non-spend
+  actions; the owner holds the approval inbox.
+- **Spend approval inbox.** Spend actions raise a request that the owner approves
+  before anything executes.
 
-- `server/` — Express + TypeScript. Reads autopilot state, shells out to
-  `lib/state.py`, calls Reply.io / Inven / Lob.
-- `web/` — Vite + React + TypeScript + Tailwind. Frontend.
-- `docs/data-shapes.md` — the JSON shapes this dashboard consumes.
+See **[CONTRIBUTING.md](./CONTRIBUTING.md)** for the dev guide and
+**[DEPLOY.md](./DEPLOY.md)** for how the demo + landing page are deployed.
 
-## What it doesn't do
+---
 
-- Activate Reply.io sequences (always Nico's manual click in Reply.io UI).
-- Send Lob LIVE letters (always `/send-letter --live` in Claude chat).
-- Write to autopilot state files directly (always via `lib/state.py`).
-- Edit autopilot source, skills, or the launchd plist.
+## What it deliberately does NOT do
+
+These are guardrails, not gaps:
+
+- It never **activates** an email sequence on its own — that stays a deliberate
+  human action in the outreach tool's own UI.
+- It never sends **live physical mail** on its own.
+- It never writes autopilot state directly or edits the agent "brain."
+- In fixture mode it makes **no** network calls and spends **no** money.
+
+The agent "brain" (the voice rules, outreach templates, and industry theses that
+make the outreach personal) lives in a **separate private repo** and is not part
+of this project.
+
+---
+
+## Roadmap
+
+- **Bring your own templates & sequences.** Today the outreach copy and rules are
+  mine. The plan is a customizable layer where searchers plug in their own
+  templates and sequences — with shared, generic helpers (e.g. a writing
+  "humanizer") available to everyone — without anyone having to adopt my exact
+  playbook.
+- **More tool integrations.** Generalize the sourcing/email/mail channels beyond
+  the specific tools wired up today.
+
+Have ideas? Open an issue.
+
+---
+
+## Contributing
+
+Contributions are welcome. The fastest path: run `npm run dev:fixture`, make your
+change, and open a PR against `main`. See **[CONTRIBUTING.md](./CONTRIBUTING.md)**
+for the dev guide (fixture mode, role preview, typecheck commands).
+
+This is actively maintained, though as a one-searcher-plus-an-intern project it
+may lag a little behind issues — thanks for your patience.
+
+---
+
+## About / contact
+
+Built by **Nicolas Goldberg**, a search-fund entrepreneur, as part of
+**[NSP (Nico's Search Partners)](https://partnerwithnico.com)**.
+
+- Open Sourcing: **[opensourcing.dev](https://opensourcing.dev)**
+- About me / my search: **[partnerwithnico.com](https://partnerwithnico.com)**
+
+If you're a fellow searcher (or an investor who knows a few), take it for a spin
+and tell me what you'd want it to do.
+
+---
+
+## License
+
+[MIT](./LICENSE) © 2026 Nicolas Goldberg.
+
+Built with [Claude Code](https://claude.com/claude-code).
