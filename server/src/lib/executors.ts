@@ -40,7 +40,7 @@ export async function executeOrchestrator(): Promise<ExecResult> {
       "/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
     ORCH_MAX_NICHES: process.env.ORCH_MAX_NICHES ?? "1",
     ORCH_BRAINSTORM_ONLY: process.env.ORCH_BRAINSTORM_ONLY ?? "false",
-    ORCH_TELEGRAM_CHAT_ID: process.env.ORCH_TELEGRAM_CHAT_ID ?? "8702070399",
+    ORCH_TELEGRAM_CHAT_ID: process.env.ORCH_TELEGRAM_CHAT_ID ?? "",
   };
 
   try {

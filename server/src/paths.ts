@@ -11,7 +11,7 @@ const FIXTURES_ROOT = path.resolve(__dirname, "../../fixtures");
 export const AUTOPILOT_REPO = FIXTURE_MODE
   ? path.join(FIXTURES_ROOT, "autopilot")
   : process.env.AUTOPILOT_REPO ??
-    path.join(HOME, "conductor/workspaces/open-sourcing/porto");
+    path.join(HOME, "autopilot");
 
 export const NSP_STATE_DIR = FIXTURE_MODE
   ? path.join(FIXTURES_ROOT, "nsp-state")

@@ -3,7 +3,7 @@
 Everything below is **read-only** from the dashboard's perspective unless a
 `lib/state.py` mutation path is noted. Sources of truth:
 
-- Autopilot repo: `/Users/nicolasgoldberg/conductor/workspaces/open-sourcing/porto`
+- Autopilot repo: `/path/to/autopilot-repo`
   (referred to as `$AUTOPILOT_REPO` below)
 - Autopilot state dir: `~/Library/Application Support/nsp-autopilot/`
   (referred to as `$NSP_STATE` below)
