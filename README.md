@@ -129,7 +129,14 @@ sample data and no outreach copy of its own.** The pieces that make outreach
 actually land — the voice rules, email and message templates, and industry
 theses — live in a **separate private repo** (the "brain") and are **not part of
 this project.** Clone this and you get the dashboard, the wiring, and fake
-fixtures, ready to be pointed at a brain you bring yourself.
+fixtures: a complete, runnable demo of how the system works — designed to sit in
+front of an autopilot "brain." (A documented way to bring your own brain is on
+the [roadmap](#roadmap).)
+
+**Make it yours.** Everything that reflects a particular search is meant to be
+customized, not copied. My buy-box criteria, niche scoring, and outreach
+templates fit *my* fund — yours should be different. The point isn't to run my
+playbook; it's to give you a working system to make your own.
 
 ---
 
