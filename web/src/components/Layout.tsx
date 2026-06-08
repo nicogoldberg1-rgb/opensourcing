@@ -29,7 +29,7 @@ export function Layout({
       <header className="flex shrink-0 items-center justify-between border-b border-neutral-200 bg-white px-6 py-3">
         <div className="flex items-baseline gap-3">
           <h1 className="text-base font-semibold tracking-tight">
-            NSP Autopilot
+            Open Sourcing by NSP
           </h1>
           {subtitle && (
             <span className="text-xs text-neutral-400">{subtitle}</span>
