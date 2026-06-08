@@ -19,7 +19,7 @@ async function loadKey(): Promise<{ key: string; mode: "test" | "live" } | null>
     };
     return cachedKey;
   }
-  // 2. Fall back to the same credentials file the /send-letter skill uses
+  // 2. Fall back to the standard Lob credentials file
   try {
     const raw = await fs.readFile(CREDS_PATH, "utf8");
     const creds: Record<string, string> = {};
@@ -142,7 +142,7 @@ export async function getLobSummary(): Promise<LobSummary> {
       fetched_at: now,
       this_month: { count: 0, total_usd: 0, avg_usd: null },
       recent: [],
-      note: "Lob credentials not found. Expected at ~/.config/lob/credentials (same file the /send-letter skill uses) or LOB_API_KEY env var.",
+      note: "Lob credentials not found. Expected at ~/.config/lob/credentials or the LOB_API_KEY env var.",
     };
     cache = { at: Date.now(), value };
     return value;
