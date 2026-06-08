@@ -28,7 +28,7 @@ load after it's been idle can take ~30–50s to wake up.)
 
 Landing page: **[opensourcing.dev](https://opensourcing.dev)**
 
-Want the version you can run with your *own* playbook when it ships? **[Join the waitlist →](https://opensourcing.dev)**
+Want the version you can run with your *own* playbook when it ships? **[Join the waitlist →](https://opensourcing.dev/#waitlist)**
 
 ---
 
@@ -142,7 +142,7 @@ playbook; it's to give you a working system to make your own.
 
 **Want the runnable, customizable version?** That's what I'm building next — a
 release you can point at your own playbook (or shared, generic skills) instead of
-mine. **[Join the waitlist →](https://opensourcing.dev)** and I'll let you know the moment it's ready.
+mine. **[Join the waitlist →](https://opensourcing.dev/#waitlist)** and I'll let you know the moment it's ready.
 
 ---
 
@@ -183,7 +183,7 @@ Built by **Nicolas Goldberg**, a search-fund entrepreneur, as part of
 
 If you're a fellow searcher (or an investor who knows a few), take it for a spin
 and tell me what you'd want it to do. And if you want the customizable version
-when it ships, **[join the waitlist](https://opensourcing.dev)**.
+when it ships, **[join the waitlist](https://opensourcing.dev/#waitlist)**.
 
 ---
 

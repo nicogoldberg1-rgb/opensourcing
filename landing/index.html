@@ -145,6 +145,26 @@
         background: var(--amber-bg); border-radius: 8px; padding: 7px 12px;
       }
       footer .copyright { font-size: 12.5px; color: var(--faint); }
+
+      .waitlist {
+        background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+        padding: 34px 28px; margin-top: 40px; text-align: center;
+      }
+      .waitlist h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 8px; }
+      .waitlist p { font-size: 14.5px; color: var(--muted); max-width: 54ch; margin: 0 auto 22px; }
+      .wl-form { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; max-width: 660px; margin: 0 auto; }
+      .wl-form input {
+        flex: 1; min-width: 150px; font-size: 14px; padding: 10px 12px;
+        border: 1px solid var(--line); border-radius: 9px; background: #fafafa;
+        color: var(--ink); font-family: inherit;
+      }
+      .wl-form input:focus { outline: none; border-color: var(--accent); background: #fff; }
+      .wl-form .btn { width: auto; padding: 10px 22px; }
+      .wl-hp { position: absolute !important; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+      .wl-msg { margin-top: 14px; font-size: 13.5px; min-height: 18px; }
+      .wl-msg.ok { color: #16a34a; }
+      .wl-msg.err { color: #dc2626; }
+      @media (max-width: 560px) { .wl-form { flex-direction: column; } .wl-form .btn { width: 100%; } }
     </style>
   </head>
   <body>
@@ -224,6 +244,23 @@
         </div>
       </section>
 
+      <section class="waitlist" id="waitlist">
+        <h2>Want the version you can run yourself?</h2>
+        <p>
+          What's open today is the dashboard + demo. The customizable release — point
+          it at your own playbook, templates, and buy-box — is coming. Join the waitlist
+          and I'll let you know the moment it's ready.
+        </p>
+        <form class="wl-form" id="wl-form" novalidate>
+          <input type="text"  name="name"    placeholder="Name"          autocomplete="name" required />
+          <input type="email" name="email"   placeholder="Email"         autocomplete="email" required />
+          <input type="text"  name="company" placeholder="Company / fund" autocomplete="organization" />
+          <input class="wl-hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <button class="btn primary" type="submit" id="wl-submit">Join the waitlist</button>
+        </form>
+        <div class="wl-msg" id="wl-msg" role="status" aria-live="polite"></div>
+      </section>
+
       <footer>
         <span class="note">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
@@ -250,6 +287,56 @@
           });
         });
       });
+
+      // --- Waitlist: posts name/email/company to a Google Apps Script -> Google Sheet.
+      // Replace the endpoint below with the Apps Script Web App /exec URL after deploy.
+      var WAITLIST_ENDPOINT = "https://script.google.com/macros/s/AKfycbwi7A4belAeX518FY-kcTdj9bqs9f9MrBGs1MbcSAb_WB1cfna8mXz4ZWE8Yy0XqhHqnA/exec";
+      (function () {
+        var form = document.getElementById("wl-form");
+        if (!form) return;
+        var msg = document.getElementById("wl-msg");
+        var btn = document.getElementById("wl-submit");
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          msg.className = "wl-msg";
+          var data = {
+            name: form.elements["name"].value.trim(),
+            email: form.elements["email"].value.trim(),
+            company: form.elements["company"].value.trim(),
+            website: form.elements["website"].value.trim()
+          };
+          if (data.website) return; // honeypot -> silently drop bots
+          if (!data.name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email)) {
+            msg.className = "wl-msg err";
+            msg.textContent = "Please enter your name and a valid email.";
+            return;
+          }
+          if (WAITLIST_ENDPOINT.indexOf("__") === 0) {
+            msg.className = "wl-msg err";
+            msg.textContent = "Waitlist isn't connected yet — check back soon.";
+            return;
+          }
+          btn.disabled = true;
+          var prev = btn.textContent;
+          btn.textContent = "Joining…";
+          fetch(WAITLIST_ENDPOINT, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(data)
+          }).then(function () {
+            form.reset();
+            msg.className = "wl-msg ok";
+            msg.textContent = "You're on the list — thanks! I'll be in touch.";
+          }).catch(function () {
+            msg.className = "wl-msg err";
+            msg.textContent = "Something went wrong — please try again.";
+          }).finally(function () {
+            btn.disabled = false;
+            btn.textContent = prev;
+          });
+        });
+      })();
     </script>
   </body>
 </html>
