@@ -28,6 +28,8 @@ load after it's been idle can take ~30–50s to wake up.)
 
 Landing page: **[opensourcing.dev](https://opensourcing.dev)**
 
+Want the version you can run with your *own* playbook when it ships? **[Join the waitlist →](https://opensourcing.dev)**
+
 ---
 
 ## What it does
@@ -138,6 +140,10 @@ customized, not copied. My buy-box criteria, niche scoring, and outreach
 templates fit *my* fund — yours should be different. The point isn't to run my
 playbook; it's to give you a working system to make your own.
 
+**Want the runnable, customizable version?** That's what I'm building next — a
+release you can point at your own playbook (or shared, generic skills) instead of
+mine. **[Join the waitlist →](https://opensourcing.dev)** and I'll let you know the moment it's ready.
+
 ---
 
 ## Roadmap
@@ -176,7 +182,8 @@ Built by **Nicolas Goldberg**, a search-fund entrepreneur, as part of
 - LinkedIn (NSP): **[nicossearchpartners](https://www.linkedin.com/company/nicossearchpartners/)**
 
 If you're a fellow searcher (or an investor who knows a few), take it for a spin
-and tell me what you'd want it to do.
+and tell me what you'd want it to do. And if you want the customizable version
+when it ships, **[join the waitlist](https://opensourcing.dev)**.
 
 ---
 
