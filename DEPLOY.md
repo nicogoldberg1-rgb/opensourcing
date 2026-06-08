@@ -28,7 +28,7 @@ serves the SPA and `/api/*` from **one port** via Express. Env is locked to
 
 **One-time setup (Nico clicks):**
 1. Go to <https://dashboard.render.com> → **New** → **Blueprint**.
-2. Connect the GitHub repo `nicogoldberg1-rgb/nsp-dashboard` (authorize Render to
+2. Connect the GitHub repo `nicogoldberg1-rgb/opensourcing` (authorize Render to
    read it; the repo is private).
 3. Render detects `render.yaml` and proposes a web service named
    **`nsp-dashboard-demo`** on the **Free** plan. Confirm/apply.
