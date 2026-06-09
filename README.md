@@ -1,20 +1,26 @@
 # Open Sourcing by NSP
 
-**Searching on easy mode.** An end-to-end, multi-channel outreach system for
+**Search on easy mode.** An end-to-end, multi-channel outreach system for
 search-fund entrepreneurs — niche ideation → company sourcing → screening →
-personalized email, LinkedIn, and physical mail — run by [Claude Code](https://claude.com/claude-code)
+personalized email, LinkedIn, and physical mail — all run by [Claude Code](https://claude.com/claude-code)
 agents.
 
-Spend your time on the things that actually move a search forward — talking to
-owners, diligencing deals, building industry theses — and leave the rest to the
+Spend your time on the things that actually move a search forward — building
+industry theses, talking to owners, diligencing deals — and leave the rest to the
 agents.
 
 > Built by a searcher, for the searcher community.
-> _Open Sourcing_ is by [NSP (Nico's Search Partners)](https://partnerwithnico.com).
+> _Open Sourcing_ is built by [NSP (Nico's Search Partners)](https://partnerwithnico.com).
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Live demo](https://img.shields.io/badge/demo-live-5b5bd6.svg)](https://nsp-dashboard-demo.onrender.com)
 [![Built with Claude Code](https://img.shields.io/badge/built%20with-Claude%20Code-d97757.svg)](https://claude.com/claude-code)
+
+> **Disclaimer:** today this is wired to the specific tools one searcher (Nico)
+> uses — Inven for sourcing, Reply.io for email sequencing, Lob for mail. The plan
+> is to open source it so others can see how the whole thing fits together and
+> adapt it to their own tools. Making the tools and templates pluggable (bring
+> your own) is on the [roadmap](#roadmap).
 
 ---
 
@@ -23,8 +29,7 @@ agents.
 **→ [nsp-dashboard-demo.onrender.com](https://nsp-dashboard-demo.onrender.com)**
 
 The demo runs in **fixture mode**: 100% fake sample data, no API keys, no spend,
-no agents spawned. Click everything freely. (It's on a free tier, so the first
-load after it's been idle can take ~30–50s to wake up.)
+no agents spawned. Click everything freely.
 
 Landing page: **[opensourcing.dev](https://opensourcing.dev)**
 
@@ -35,82 +40,31 @@ Want the version you can run with your *own* playbook when it ships? **[Join the
 ## What it does
 
 This is the **control surface** for an autonomous search-fund outreach pipeline.
-The pipeline itself is a set of Claude Code agents that take a niche thesis all
-the way to ready-to-send outreach:
+The pipeline itself is a set of Claude Code skills that do everything from
+suggesting industry theses to building ready-to-send outreach completely
+autonomously.
+
+Claude Agents:
 
 1. **Ideate** a niche and shape the company search.
-2. **Source** matching companies (via [Inven](https://inven.ai)) and **screen**
+2. **Source** matching companies (via [Inven](https://inven.ai) MCP) and **screen**
    them against acquisition criteria.
 3. **Find** owner/CEO contacts and **personalize** the outreach.
 4. **Build** a multi-channel sequence — email ([Reply.io](https://reply.io)) +
    LinkedIn + physical ([Lob](https://lob.com)) letters — staged with sensible
    cadence.
 
-The dashboard lets you watch and steer that pipeline: see live cycles, review
-what's queued, manage the roadmap, and approve spend before it happens.
+The dashboard lets you watch and steer that pipeline: see live cycles,
+approve queued industries, and approve spend before it happens.
 
-### Searching on easy mode
+### Search on easy mode
 
 - **End-to-end, multi-channel.** One pipeline from "I have a thesis" to "the
   sequence is built and ready to send" across email, LinkedIn, and mail.
 - **Agent-run, human-steered.** Claude Code agents do the legwork; you make the
   judgment calls.
-- **Safe to demo and develop.** Fixture mode swaps every external touchpoint for
-  canned data, so the whole app runs with zero keys and zero blast radius.
-- **A human approves every dollar.** Operators (e.g. a teammate) can take any
-  action up to "built and ready," but anything that *spends* — running a cycle,
-  exporting contacts, sending mail — becomes a request the owner approves in an
-  inbox. No agent and no teammate spends money on its own.
-
-> **Heads up:** today this is wired to the specific tools one searcher (me) uses —
-> Inven for sourcing, Reply.io for email sequencing, Lob for mail. It's open
-> sourced so others can see how the whole thing fits together and adapt it.
-> Making the tools and templates pluggable (bring your own) is on the
-> [roadmap](#roadmap).
-
----
-
-## Run it locally (no keys needed)
-
-```bash
-git clone https://github.com/nicogoldberg1-rgb/opensourcing.git
-cd opensourcing
-npm install
-npm run dev:fixture
-```
-
-Open **http://localhost:5173** — you'll see an amber **"Fixture mode"** banner
-and a fully populated app. This is the same thing the live demo runs: fake data,
-no network calls, no spend, no agents.
-
-Want to preview the limited "operator" view? Add `?role=operator` (or
-`?role=viewer`) to the URL. Default is `owner`.
-
-To run against a real autopilot instead of fixtures, see
-**[CONTRIBUTING.md](./CONTRIBUTING.md)** and **[DEPLOY.md](./DEPLOY.md)**.
-
----
-
-## Architecture
-
-```
-server/    Express + TypeScript. Reads autopilot state, calls Reply.io / Inven / Lob,
-           and exposes a small REST API under /api/*. One file per concern in src/lib,
-           one per endpoint group in src/routes. The fixture switch is src/config.ts.
-web/       Vite + React + TypeScript + Tailwind. Pages in src/pages, shared UI in
-           src/components, API client in src/lib/api.ts.
-fixtures/  Bundled fake data that powers fixture mode (the demo + local dev).
-landing/   Static landing page (opensourcing.dev).
-```
-
-- **Roles.** `owner` / `operator` / `viewer`, resolved from an authenticated
-  email in production (or `?role=` locally). Operators are limited to non-spend
-  actions; the owner holds the approval inbox.
-- **Spend approval inbox.** Spend actions raise a request that the owner approves
-  before anything executes.
-
-See **[CONTRIBUTING.md](./CONTRIBUTING.md)** for the dev guide and
-**[DEPLOY.md](./DEPLOY.md)** for how the demo + landing page are deployed.
+- **Collaborative workflows.** Teammates or interns can plug in and build
+  industry theses that the searcher can then approve from the Open Sourcing UI.
 
 ---
 
@@ -137,7 +91,7 @@ the [roadmap](#roadmap).)
 
 **Make it yours.** Everything that reflects a particular search is meant to be
 customized, not copied. My buy-box criteria, niche scoring, and outreach
-templates fit *my* fund — yours should be different. The point isn't to run my
+templates fit *my* fund — yours may be different! The point isn't to run my
 playbook; it's to give you a working system to make your own.
 
 **Want the runnable, customizable version?** That's what I'm building next — a
