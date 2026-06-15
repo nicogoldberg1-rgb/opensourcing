@@ -1,0 +1,28 @@
+{
+  "configured": true,
+  "mode": "test",
+  "this_month": {
+    "count": 12,
+    "total_usd": 0,
+    "avg_usd": null
+  },
+  "recent": [
+    {
+      "id": "ltr_demo1",
+      "to_name": "DEMO RECIPIENT",
+      "to_city": "Austin, TX",
+      "price_usd": 0,
+      "date_created": "2026-05-30T10:00:00Z",
+      "description": "fixture letter"
+    },
+    {
+      "id": "ltr_demo2",
+      "to_name": "SAMPLE OWNER",
+      "to_city": "Columbus, OH",
+      "price_usd": 0,
+      "date_created": "2026-05-28T10:00:00Z",
+      "description": "fixture letter"
+    }
+  ],
+  "note": "[fixture] sample Lob data \u2014 no real API call."
+}

@@ -1,0 +1,63 @@
+{
+  "files_scanned": 0,
+  "last_5h": {
+    "input": 360000,
+    "cache_create": 1440000,
+    "cache_read": 3600000,
+    "output": 180000,
+    "messages": 60
+  },
+  "last_24h": {
+    "input": 840000,
+    "cache_create": 3360000,
+    "cache_read": 8400000,
+    "output": 420000,
+    "messages": 140
+  },
+  "this_week": {
+    "input": 3800000,
+    "cache_create": 15200000,
+    "cache_read": 38000000,
+    "output": 1900000,
+    "messages": 520
+  },
+  "this_month": {
+    "input": 12400000,
+    "cache_create": 49600000,
+    "cache_read": 124000000,
+    "output": 6200000,
+    "messages": 1850
+  },
+  "by_day": [
+    {
+      "day": "2026-06-01",
+      "output": 180000,
+      "total_input": 5400000,
+      "messages": 60
+    },
+    {
+      "day": "2026-05-31",
+      "output": 240000,
+      "total_input": 7100000,
+      "messages": 88
+    },
+    {
+      "day": "2026-05-30",
+      "output": 95000,
+      "total_input": 2600000,
+      "messages": 33
+    }
+  ],
+  "top_projects": [
+    {
+      "project": "fixtures/autopilot",
+      "output": 3200000,
+      "messages": 900
+    },
+    {
+      "project": "fixtures/dashboard",
+      "output": 1500000,
+      "messages": 420
+    }
+  ]
+}

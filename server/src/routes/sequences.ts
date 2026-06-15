@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { fetchCampaigns, type ReplyCampaign } from "../lib/reply.js";
+import { fetchCampaigns, getSequenceDetail, type ReplyCampaign } from "../lib/reply.js";
 
 export const sequencesRouter = Router();
 
@@ -87,5 +87,25 @@ sequencesRouter.get("/", async (_req, res) => {
     const message = err instanceof Error ? err.message : String(err);
     const code = message.includes("reply_io_key_not_found") ? 503 : 500;
     res.status(code).json({ error: "reply_io_failed", message });
+  }
+});
+
+
+sequencesRouter.get("/:id/detail", async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) {
+    res.status(400).json({ error: "invalid_sequence_id" });
+    return;
+  }
+  try {
+    const detail = await getSequenceDetail(id);
+    if (!detail) {
+      res.status(404).json({ error: "sequence_detail_not_found", id });
+      return;
+    }
+    res.json(detail);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: "sequence_detail_failed", message });
   }
 });

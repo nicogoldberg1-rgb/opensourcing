@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 
 import { FIXTURE_MODE } from "../config.js";
+import { DEMO_SEQUENCES_JSON } from "../paths.js";
 
 const REPLY_BASE = "https://api.reply.io";
 const CACHE_TTL_MS = 30_000;
@@ -45,15 +46,61 @@ export type ReplyCampaign = {
   peoplePaused: number;
 };
 
+export type SequenceStep = {
+  step: number;
+  day: number;
+  channel: "linkedin" | "email" | "letter";
+  subject: string | null;
+  body: string;
+};
+
+// A demo sequence is a ReplyCampaign plus the preview-only fields the in-app
+// sequence preview renders (the actual outreach copy + a sample recipient).
+type DemoSequence = ReplyCampaign & {
+  niche_slug?: string;
+  sample_contact?: Record<string, string> | null;
+  steps?: SequenceStep[];
+};
+
+export type SequenceDetail = {
+  id: number;
+  name: string;
+  niche_slug?: string;
+  sample_contact: Record<string, string> | null;
+  steps: SequenceStep[];
+};
+
+async function loadDemoSequences(): Promise<DemoSequence[]> {
+  const raw = await fs.readFile(DEMO_SEQUENCES_JSON, "utf8");
+  const parsed = JSON.parse(raw) as { sequences: DemoSequence[] };
+  return parsed.sequences ?? [];
+}
+
+function stripDemoExtras(s: DemoSequence): ReplyCampaign {
+  const { niche_slug: _n, sample_contact: _s, steps: _t, ...campaign } = s;
+  return campaign;
+}
+
+// Preview content for one sequence. Only available in fixture/demo mode; in real
+// mode the dashboard links out to the actual Reply.io UI instead.
+export async function getSequenceDetail(id: number): Promise<SequenceDetail | null> {
+  if (!FIXTURE_MODE) return null;
+  const found = (await loadDemoSequences()).find((s) => s.id === id);
+  if (!found) return null;
+  return {
+    id: found.id,
+    name: found.name,
+    niche_slug: found.niche_slug,
+    sample_contact: found.sample_contact ?? null,
+    steps: found.steps ?? [],
+  };
+}
+
 let cache: { at: number; value: ReplyCampaign[] } | null = null;
 
 export async function fetchCampaigns(): Promise<ReplyCampaign[]> {
   if (FIXTURE_MODE) {
-    return [
-      { id: 9001, name: "TEST_compliance-software-2026-05-21", created: "2026-05-21T10:00:00", status: 0, emailAccount: "demo@example.com", deliveriesCount: 0, opensCount: 0, repliesCount: 0, bouncesCount: 0, optOutsCount: 0, outOfOfficeCount: 0, peopleCount: 25, peopleFinished: 0, peopleActive: 25, peoplePaused: 0 },
-      { id: 9002, name: "Legal Case Mgmt", created: "2026-04-02T10:00:00", status: 4, emailAccount: "demo@example.com", deliveriesCount: 20, opensCount: 9, repliesCount: 4, bouncesCount: 1, optOutsCount: 0, outOfOfficeCount: 1, peopleCount: 20, peopleFinished: 20, peopleActive: 0, peoplePaused: 0 },
-      { id: 9003, name: "Mens Health Clinics", created: "2026-03-15T10:00:00", status: 1, emailAccount: "demo@example.com", deliveriesCount: 18, opensCount: 7, repliesCount: 2, bouncesCount: 0, optOutsCount: 1, outOfOfficeCount: 0, peopleCount: 22, peopleFinished: 6, peopleActive: 16, peoplePaused: 0 },
-    ];
+    return (await loadDemoSequences()).map(stripDemoExtras);
   }
   if (cache && Date.now() - cache.at < CACHE_TTL_MS) return cache.value;
   const key = await getKey();

@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import readline from "node:readline";
 import { FIXTURE_MODE } from "../config.js";
+import { DEMO_ANTHROPIC_JSON } from "../paths.js";
 
 const PROJECTS_DIR = path.join(os.homedir(), ".claude/projects");
 const SCAN_DAYS = 60; // only consider files modified in last N days
@@ -116,24 +117,9 @@ async function scanFile(
 
 export async function getAnthropicUsage(): Promise<AnthropicUsage> {
   if (FIXTURE_MODE) {
-    const b = (o: number, m: number): Bucket => ({ input: o * 2, cache_create: o * 8, cache_read: o * 20, output: o, messages: m });
-    return {
-      scanned_at: new Date().toISOString(),
-      files_scanned: 0,
-      last_5h: b(180000, 60),
-      last_24h: b(420000, 140),
-      this_week: b(1900000, 520),
-      this_month: b(6200000, 1850),
-      by_day: [
-        { day: "2026-06-01", output: 180000, total_input: 5400000, messages: 60 },
-        { day: "2026-05-31", output: 240000, total_input: 7100000, messages: 88 },
-        { day: "2026-05-30", output: 95000, total_input: 2600000, messages: 33 },
-      ],
-      top_projects: [
-        { project: "fixtures/autopilot", output: 3200000, messages: 900 },
-        { project: "fixtures/dashboard", output: 1500000, messages: 420 },
-      ],
-    };
+    const raw = await fs.readFile(DEMO_ANTHROPIC_JSON, "utf8");
+    const data = JSON.parse(raw) as Omit<AnthropicUsage, "scanned_at">;
+    return { ...data, scanned_at: new Date().toISOString() };
   }
   if (cache && Date.now() - cache.at < CACHE_TTL_MS) return cache.value;
   const files = await listRecentJsonl();

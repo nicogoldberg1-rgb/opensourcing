@@ -2,12 +2,13 @@ import { NavLink, Outlet } from "react-router-dom";
 import { cn } from "../lib/cn";
 import { useSession } from "../lib/session";
 
-const NAV: { to: string; label: string }[] = [
+const NAV: { to: string; label: string; internalOnly?: boolean }[] = [
   { to: "/", label: "Home" },
   { to: "/sequences", label: "Sequences" },
   { to: "/cycle", label: "Live cycle" },
   { to: "/spend", label: "Spend" },
-  { to: "/roadmap", label: "Roadmap" },
+  // Roadmap is Nico's internal dev tracker — hidden in the public demo (fixture mode).
+  { to: "/roadmap", label: "Roadmap", internalOnly: true },
 ];
 
 export type LayoutContext = {
@@ -36,7 +37,7 @@ export function Layout({
           )}
         </div>
         <nav className="flex items-center gap-0.5 text-sm">
-          {NAV.map((item) => (
+          {NAV.filter((item) => !(item.internalOnly && me?.fixture)).map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -95,7 +96,7 @@ export function Layout({
       </header>
       {me?.fixture && (
         <div className="shrink-0 bg-amber-100 px-6 py-1 text-center text-[11px] font-medium text-amber-800">
-          Fixture mode — demo data. Nothing here touches real autopilot state, APIs, or spend.
+          Demo mode — sample data you can explore freely. Nothing here sends real emails or spends money.
         </div>
       )}
       <Outlet context={context} />
