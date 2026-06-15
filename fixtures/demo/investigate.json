@@ -1,0 +1,28 @@
+{
+  "pest-control": {
+    "notes": "Residential and commercial pest control is close to the textbook search-fund niche: dense recurring routes, predictable contract revenue, and thousands of owner-operators in their 60s with no succession plan. Customers renew almost on autopilot, and a single regional operator can absorb neighboring shops route by route. I'd want to keep the technicians and the brand customers already trust while adding the scheduling, CRM, and routing software most shops still run without. Tailwinds: climate-driven pest pressure, the stickiness of recurring service contracts, and a wave of retiring founders.",
+    "scores": {
+      "growth": 4,
+      "size": 5,
+      "criticality": 4,
+      "penetration": 4,
+      "quality": 4
+    },
+    "adjacencies": [
+      "Wildlife & animal control",
+      "Lawn care & treatment",
+      "Termite & WDO inspection"
+    ],
+    "buy_box": {
+      "revenue_min": 2000000,
+      "revenue_max": 12000000,
+      "ebitda_min": 500000,
+      "ebitda_max": 3000000,
+      "headcount_min": 15,
+      "headcount_max": 90,
+      "geography": "US, regional",
+      "ownership": "Founder / owner-operated",
+      "notes": "Recurring routes & service contracts; high renewal rates"
+    }
+  }
+}

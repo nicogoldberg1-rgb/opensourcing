@@ -106,6 +106,40 @@ export async function setBuyBox(
   return item;
 }
 
+export type Investigation = {
+  notes?: string;
+  scores?: Record<string, number>;
+  adjacencies?: string[];
+  business_type?: string;
+  buy_box?: Record<string, unknown>;
+};
+
+// Demo-only: "develop" a seed into a proposed-level entry by writing the
+// pre-authored (or generic) research onto the niche and flipping it to proposed.
+// Real mode investigates via a spawned Claude run instead (see routes/niches).
+export async function applyInvestigation(
+  slug: string,
+  data: Investigation,
+): Promise<unknown> {
+  const raw = await fs.readFile(TRACKER_JSON, "utf8");
+  const tracker = JSON.parse(raw) as { industries: Record<string, unknown>[] };
+  const item = tracker.industries.find((n) => n.id === slug || n.slug === slug);
+  if (!item) throw new Error(`no niche with slug/id: ${slug}`);
+  if (data.notes) item.notes = data.notes;
+  if (data.scores) item.scores = data.scores;
+  if (data.adjacencies) item.adjacencies = data.adjacencies;
+  if (data.business_type) item.business_type = data.business_type;
+  if (data.buy_box) item.buy_box = data.buy_box;
+  const at = nowIso();
+  item.status = "proposed";
+  item.proposed_at = at;
+  const hist = (item.history as unknown[]) ?? [];
+  hist.push({ at, status: "proposed", reason: "investigated from seed (demo)" });
+  item.history = hist;
+  await fs.writeFile(TRACKER_JSON, JSON.stringify(tracker, null, 2));
+  return item;
+}
+
 export async function summary(): Promise<unknown> {
   const { stdout } = await execFileP("python3", [STATE_PY, "summary"], {
     timeout: 15_000,

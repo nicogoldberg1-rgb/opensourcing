@@ -3,8 +3,8 @@ import { spawn } from "node:child_process";
 import path from "node:path";
 import os from "node:os";
 import { Router } from "express";
-import { AUTOPILOT_REPO, NSP_STATE_DIR, TRACKER_JSON } from "../paths.js";
-import { addProposed, isValidStatus, setBuyBox, setStatus } from "../lib/state-cli.js";
+import { AUTOPILOT_REPO, DEMO_INVESTIGATE_JSON, NSP_STATE_DIR, TRACKER_JSON } from "../paths.js";
+import { addProposed, applyInvestigation, isValidStatus, setBuyBox, setStatus, type Investigation } from "../lib/state-cli.js";
 import { executeRunCycle } from "../lib/executors.js";
 import { resolveIdentity } from "../lib/roles.js";
 import { createRequest } from "../lib/requests.js";
@@ -21,6 +21,30 @@ function slugify(name: string): string {
 }
 
 export const nichesRouter = Router();
+// Demo investigate: pre-authored research for known seeds (e.g. pest-control),
+// generic but believable development for anything a visitor invents.
+async function loadReveal(slug: string, name: string): Promise<Investigation> {
+  try {
+    const raw = await fs.readFile(DEMO_INVESTIGATE_JSON, "utf8");
+    const map = JSON.parse(raw) as Record<string, Investigation>;
+    if (map[slug]) return map[slug];
+  } catch {
+    // fall through to generic
+  }
+  return {
+    notes: `${name} looks like a promising search-fund target: a fragmented market of owner-operated businesses with recurring revenue, aging founders, and little consolidation. The opportunity is to acquire one strong operator, keep what customers love, and add the systems and software it never had. Tailwinds: fragmentation, demographic succession gaps, and steady underlying demand.`,
+    scores: { growth: 3, size: 4, criticality: 4, penetration: 4, quality: 3 },
+    buy_box: {
+      revenue_min: 1000000, revenue_max: 10000000,
+      ebitda_min: 300000, ebitda_max: 2500000,
+      headcount_min: 10, headcount_max: 80,
+      geography: "US", ownership: "Founder / owner-operated",
+      notes: "Recurring revenue; fragmented market",
+    },
+  };
+}
+
+
 
 nichesRouter.get("/", async (_req, res) => {
   try {
@@ -118,9 +142,9 @@ nichesRouter.post("/bulk/investigate", async (req, res) => {
     });
     if (FIXTURE_MODE) {
       for (const n of targets) {
-        await setStatus(n.id, "proposed", "investigated from seed (fixture bulk)");
+        await applyInvestigation(n.id, await loadReveal(n.id, n.name));
       }
-      res.json({ ok: true, count: targets.length, message: `[fixture] Investigated ${targets.length} seeds → Proposed (simulated).` });
+      res.json({ ok: true, count: targets.length, message: `Investigated ${targets.length} seeds → developed proposals (demo simulation).` });
       return;
     }
 
@@ -217,9 +241,11 @@ nichesRouter.post("/:slug/investigate", async (req, res) => {
     }
 
     if (FIXTURE_MODE) {
-      const fakeNotes = `${niche.notes ?? ""}\n\n[fixture] Developed: fragmented market, aging owners, recurring revenue. Tailwinds: regulatory + demographic. 4+1: G4 S4 C4 P3 Q4.`.trim();
-      await setStatus(slug, "proposed", "investigated from seed (fixture)");
-      res.json({ ok: true, message: `[fixture] Investigated "${niche.name}" → Proposed (simulated, no Claude spawn).` });
+      await applyInvestigation(slug, await loadReveal(slug, niche.name));
+      res.json({
+        ok: true,
+        message: `Investigated "${niche.name}" — developed a full proposal with thesis, scores, and a buy box. (Demo: simulated, no Claude spawn or spend.)`,
+      });
       return;
     }
 

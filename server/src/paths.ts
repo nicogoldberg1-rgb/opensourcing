@@ -32,3 +32,4 @@ export const DEMO_DIR = path.join(FIXTURES_ROOT, "demo");
 export const DEMO_SEQUENCES_JSON = path.join(DEMO_DIR, "sequences.json");
 export const DEMO_LOB_JSON = path.join(DEMO_DIR, "lob.json");
 export const DEMO_ANTHROPIC_JSON = path.join(DEMO_DIR, "anthropic-usage.json");
+export const DEMO_INVESTIGATE_JSON = path.join(DEMO_DIR, "investigate.json");
