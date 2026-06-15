@@ -1,0 +1,9 @@
+{
+  "allowlist": {
+    "nico@partnerwithnico.com": "owner",
+    "sales-intern@example.com": "operator",
+    "cs-intern@example.com": "viewer"
+  },
+  "default_authenticated": "viewer",
+  "default_local": "owner"
+}

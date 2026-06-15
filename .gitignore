@@ -5,7 +5,7 @@ dist
 .env
 .env.local
 .context/
-server/data/
+server/data/*
 
 
 # fixture tracker is mutated at runtime in fixture mode; reset from the .seed
@@ -17,3 +17,6 @@ fixtures/nsp-state/industry-tracker.json
 # but DO track the fixture cycle dir (Live Cycle page needs it)
 !fixtures/autopilot/.context/
 !fixtures/autopilot/.context/**
+
+# track the roles template (placeholder emails); real roles.json stays ignored
+!server/data/roles.example.json

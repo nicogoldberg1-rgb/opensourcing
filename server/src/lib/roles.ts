@@ -1,10 +1,43 @@
 import { promises as fs } from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Request } from "express";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROLES_FILE = path.resolve(__dirname, "../../data/roles.json");
+// Off-repo backup so an accidental wipe of the gitignored data/ file is
+// recoverable. Lives in the autopilot state dir, outside the repo tree.
+const ROLES_BACKUP = path.join(
+  os.homedir(),
+  "Library/Application Support/nsp-autopilot",
+  "roles.backup.json",
+);
+
+async function mirrorBackup(raw: string): Promise<void> {
+  try {
+    await fs.mkdir(path.dirname(ROLES_BACKUP), { recursive: true });
+    await fs.writeFile(ROLES_BACKUP, raw);
+  } catch {
+    // best-effort; never block on backup
+  }
+}
+
+async function restoreFromBackup(): Promise<string | null> {
+  try {
+    const raw = await fs.readFile(ROLES_BACKUP, "utf8");
+    // self-heal: rewrite the primary so it's back in place
+    try {
+      await fs.mkdir(path.dirname(ROLES_FILE), { recursive: true });
+      await fs.writeFile(ROLES_FILE, raw);
+    } catch {
+      // ignore — at least we have the backup contents to use
+    }
+    return raw;
+  } catch {
+    return null;
+  }
+}
 
 export type Role = "owner" | "operator" | "viewer";
 
@@ -33,16 +66,25 @@ let cache: { at: number; cfg: RolesConfig } | null = null;
 async function loadConfig(): Promise<RolesConfig> {
   if (cache && Date.now() - cache.at < 5_000) return cache.cfg;
   let cfg = DEFAULT_CONFIG;
+  let raw: string | null = null;
   try {
-    const raw = await fs.readFile(ROLES_FILE, "utf8");
-    const parsed = JSON.parse(raw) as Partial<RolesConfig>;
-    cfg = {
-      allowlist: parsed.allowlist ?? {},
-      default_authenticated: parsed.default_authenticated ?? "viewer",
-      default_local: parsed.default_local ?? "owner",
-    };
+    raw = await fs.readFile(ROLES_FILE, "utf8");
+    void mirrorBackup(raw); // keep the off-repo backup fresh
   } catch {
-    // no config file — use defaults
+    // primary missing — try the off-repo backup and self-heal
+    raw = await restoreFromBackup();
+  }
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw) as Partial<RolesConfig>;
+      cfg = {
+        allowlist: parsed.allowlist ?? {},
+        default_authenticated: parsed.default_authenticated ?? "viewer",
+        default_local: parsed.default_local ?? "owner",
+      };
+    } catch {
+      // malformed — fall back to defaults
+    }
   }
   cache = { at: Date.now(), cfg };
   return cfg;
