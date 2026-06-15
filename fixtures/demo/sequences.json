@@ -1,10 +1,10 @@
 {
   "sequences": [
     {
-      "id": 9001,
-      "niche_slug": "compliance-software",
-      "name": "TEST_compliance-software-2026-05-21",
-      "created": "2026-05-21T10:00:00",
+      "id": 9101,
+      "niche_slug": "hipaa-compliance-software",
+      "name": "TEST_hipaa-compliance-software-2026-06-14",
+      "created": "2026-06-14T05:30:00",
       "status": 0,
       "emailAccount": "demo@example.com",
       "deliveriesCount": 0,
@@ -13,22 +13,98 @@
       "bouncesCount": 0,
       "optOutsCount": 0,
       "outOfOfficeCount": 0,
-      "peopleCount": 25,
+      "peopleCount": 36,
       "peopleFinished": 0,
-      "peopleActive": 25,
+      "peopleActive": 36,
+      "peoplePaused": 0,
+      "sample_contact": {
+        "first_name": "Dana",
+        "last_name": "Reyes",
+        "title": "Founder & CEO",
+        "company": "Cascade Compliance Systems",
+        "location": "Boise, ID"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "day": 0,
+          "channel": "linkedin",
+          "subject": null,
+          "body": "Hi Dana, I'm on a mission to scale HIPAA compliance software, and Cascade is one I really admire, the focus on clinics and small hospital systems especially. Would love to connect."
+        },
+        {
+          "step": 2,
+          "day": 3,
+          "channel": "email",
+          "subject": "An admirer of what you've built at Cascade Compliance Systems",
+          "body": "Hi Dana,\n\nAs I've been getting to know the HIPAA compliance world, Cascade Compliance Systems kept coming up, and what stuck with me is that you built for clinics and small hospital systems, the places that carry the most HIPAA risk but can least afford a full compliance department. Making real protection reachable for a ten-person clinic is harder, and more useful, than most people give it credit for.\n\nI'm a former public defender, and part of that work was coordinating client health care services (chronic illness, mental health, etc.). I later spent time as Chief of Staff at a lab testing company, where HIPAA wasn't a box to check, it was something we lived with every day. Today I have a \"search fund\" backed by a dozen current and former CEOs, and it is my dream to scale HIPAA compliance software, done the right way, across the country.\n\nI'd love to learn how you've built Cascade Compliance Systems, and if you ever think about what growth or the right partner could look like, I'd be glad to talk. Would you be open to a quick 20-minute call in the coming weeks?\n\nWarmly,\nNico Goldberg"
+        },
+        {
+          "step": 3,
+          "day": 6,
+          "channel": "email",
+          "subject": "Re: An admirer of what you've built at Cascade Compliance Systems",
+          "body": "Hi Dana,\n\nFollowing up on my note below. I know a cold email about a partnership is easy to set aside, so no pressure to reply quickly.\n\nIf it is ever useful, I am glad to share what I have been learning about where HIPAA compliance is heading, even if Cascade Compliance Systems is not something you would ever consider changing. Mostly I am trying to understand the space from the people who actually built in it.\n\nWarmly,\nNico"
+        },
+        {
+          "step": 4,
+          "day": 10,
+          "channel": "email",
+          "subject": "Connecting with a HIPAA compliance entrepreneur",
+          "body": "Hi Dana,\n\nI wanted to say a bit more about what I am actually after, since cold notes can come across the wrong way. I am not a fund looking to buy a company and strip it for parts. I would want to partner with a founder like you and help Cascade Compliance Systems grow into its next chapter without losing what makes it work in the first place.\n\nIf that is ever a conversation worth having, even a year or two from now, I would love twenty minutes. And if you would rather just trade notes on the field, I am glad to do that too.\n\nWarmly,\nNico"
+        },
+        {
+          "step": 5,
+          "day": 14,
+          "channel": "email",
+          "subject": "Re: Connecting with a HIPAA compliance entrepreneur",
+          "body": "Hi Dana,\n\nI know you are busy, so just a short nudge. I am still very interested in Cascade Compliance Systems and happy to talk whenever the timing is right for you.\n\nWarmly,\nNico"
+        },
+        {
+          "step": 6,
+          "day": 18,
+          "channel": "email",
+          "subject": "Comparing notes on where HIPAA compliance is headed",
+          "body": "Hi Dana,\n\nNo agenda here, just something I keep turning over that you would actually know the answer to. As more clinics move to cloud EHRs, it looks from the outside like the hard part of HIPAA compliance is shifting from locking down the servers to tracking every vendor who touches the data. I may have that wrong, and I would value your read.\n\nEither way, thank you for the work Cascade Compliance Systems does for those clinics.\n\nWarmly,\nNico"
+        },
+        {
+          "step": 7,
+          "day": 23,
+          "channel": "email",
+          "subject": "Young entrepreneur still hoping to connect on Cascade Compliance Systems",
+          "body": "Hi Dana,\n\nThis is my last note, so I will keep it short. I have a lot of respect for what you have built at Cascade Compliance Systems, and I did not want to keep filling your inbox.\n\nIf you ever want to trade notes on the field, or think about what a partnership could look like down the road, my door is open. Thank you for the work you do.\n\nWarmly,\nNico"
+        }
+      ]
+    },
+    {
+      "id": 9103,
+      "niche_slug": "commercial-hvac-services",
+      "name": "Commercial HVAC Services",
+      "created": "2026-05-22T10:00:00",
+      "status": 1,
+      "emailAccount": "demo@example.com",
+      "deliveriesCount": 42,
+      "opensCount": 20,
+      "repliesCount": 2,
+      "bouncesCount": 1,
+      "optOutsCount": 0,
+      "outOfOfficeCount": 1,
+      "peopleCount": 42,
+      "peopleFinished": 12,
+      "peopleActive": 30,
       "peoplePaused": 0,
       "sample_contact": null,
       "steps": []
     },
     {
-      "id": 9002,
+      "id": 9102,
       "niche_slug": "legal-case-management-software",
-      "name": "Legal Case Mgmt",
-      "created": "2026-04-02T10:00:00",
+      "name": "Legal Case Management Software",
+      "created": "2026-04-05T10:00:00",
       "status": 4,
       "emailAccount": "demo@example.com",
       "deliveriesCount": 20,
-      "opensCount": 9,
+      "opensCount": 11,
       "repliesCount": 4,
       "bouncesCount": 1,
       "optOutsCount": 0,
@@ -37,28 +113,64 @@
       "peopleFinished": 20,
       "peopleActive": 0,
       "peoplePaused": 0,
-      "sample_contact": null,
-      "steps": []
-    },
-    {
-      "id": 9003,
-      "niche_slug": "mens-health-clinics",
-      "name": "Mens Health Clinics",
-      "created": "2026-03-15T10:00:00",
-      "status": 1,
-      "emailAccount": "demo@example.com",
-      "deliveriesCount": 18,
-      "opensCount": 7,
-      "repliesCount": 2,
-      "bouncesCount": 0,
-      "optOutsCount": 1,
-      "outOfOfficeCount": 0,
-      "peopleCount": 22,
-      "peopleFinished": 6,
-      "peopleActive": 16,
-      "peoplePaused": 0,
-      "sample_contact": null,
-      "steps": []
+      "sample_contact": {
+        "first_name": "Marcus",
+        "last_name": "Hale",
+        "title": "Founder & President",
+        "company": "Lakeside Legal Software",
+        "location": "Madison, WI"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "day": 0,
+          "channel": "linkedin",
+          "subject": null,
+          "body": "Hi Marcus, I'm on a mission to scale legal case management software, and Lakeside is one I really admire, the small-firm focus especially. Would love to connect."
+        },
+        {
+          "step": 2,
+          "day": 3,
+          "channel": "email",
+          "subject": "An admirer of what you've built at Lakeside Legal Software",
+          "body": "Hi Marcus,\n\nAs I've been getting to know the legal case management world, Lakeside Legal Software kept coming up, and what stuck with me is that you built for small law firms, the two- and three-lawyer shops that run on whatever actually fits how they work, instead of chasing the big firms everyone else fights over. Building for the firms that need the help most, and have the least patience for clunky tools, is harder to get right than it looks.\n\nI started out as a Client Advocate in the Alameda County Public Defender's Office, working in jails, clinics, and encampments to help people get through the legal system in one piece. That work taught me how much a case can turn on whether the people handling it can find the right document and hit the right date. Today I have a \"search fund\" backed by a dozen current and former CEOs, and it is my dream to scale legal case management software, built around how lawyers actually work, across the country.\n\nI'd love to learn how you've built Lakeside Legal Software, and if you ever think about what growth or the right partner could look like, I'd be glad to talk. Would you be open to a quick 20-minute call in the coming weeks?\n\nWarmly,\nNico Goldberg"
+        },
+        {
+          "step": 3,
+          "day": 6,
+          "channel": "email",
+          "subject": "Re: An admirer of what you've built at Lakeside Legal Software",
+          "body": "Hi Marcus,\n\nFollowing up on my note below. I know a cold email about a partnership is easy to set aside, so no pressure to reply quickly.\n\nIf it is ever useful, I am glad to share what I have been learning about where legal case management is heading, even if Lakeside Legal Software is not something you would ever consider changing. Mostly I am trying to understand the space from the people who actually built in it.\n\nWarmly,\nNico"
+        },
+        {
+          "step": 4,
+          "day": 10,
+          "channel": "email",
+          "subject": "Connecting with a legal software entrepreneur",
+          "body": "Hi Marcus,\n\nI wanted to say a bit more about what I am actually after, since cold notes can come across the wrong way. I am not a fund looking to buy a company and strip it for parts. I would want to partner with a founder like you and help Lakeside Legal Software grow into its next chapter without losing what makes it work in the first place.\n\nIf that is ever a conversation worth having, even a year or two from now, I would love twenty minutes. And if you would rather just trade notes on the field, I am glad to do that too.\n\nWarmly,\nNico"
+        },
+        {
+          "step": 5,
+          "day": 14,
+          "channel": "email",
+          "subject": "Re: Connecting with a legal software entrepreneur",
+          "body": "Hi Marcus,\n\nI know you are busy, so just a short nudge. I am still very interested in Lakeside Legal Software and happy to talk whenever the timing is right for you.\n\nWarmly,\nNico"
+        },
+        {
+          "step": 6,
+          "day": 18,
+          "channel": "email",
+          "subject": "Comparing notes on where legal case management is headed",
+          "body": "Hi Marcus,\n\nNo agenda here, just something I keep turning over that you would actually know. For small firms, it looks from the outside like the tools that stick are the ones that quietly fixed the billing and getting-paid side, not just the case tracking. I may have that backwards, and I would value your read.\n\nEither way, thank you for the work Lakeside Legal Software does for those firms.\n\nWarmly,\nNico"
+        },
+        {
+          "step": 7,
+          "day": 23,
+          "channel": "email",
+          "subject": "Young entrepreneur still hoping to connect on Lakeside Legal Software",
+          "body": "Hi Marcus,\n\nThis is my last note, so I will keep it short. I have a lot of respect for what you have built at Lakeside Legal Software, and I did not want to keep filling your inbox.\n\nIf you ever want to trade notes on the field, or think about what a partnership could look like down the road, my door is open. Thank you for the work you do.\n\nWarmly,\nNico"
+        }
+      ]
     }
   ]
 }

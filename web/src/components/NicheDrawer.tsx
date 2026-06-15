@@ -15,7 +15,8 @@ import {
 import { Sparkles, User } from "lucide-react";
 import { Button } from "./ui/Button";
 import { Badge } from "./ui/Badge";
-import { ScorePills } from "./ui/ScorePills";
+import { ScoreBreakdown } from "./ui/ScoreBreakdown";
+import { BuyBox } from "./BuyBox";
 import { confirmDialog } from "./ui/Dialog";
 
 type Action =
@@ -145,7 +146,6 @@ export function NicheDrawer({
               })()}
               {niche.type && <Badge>{niche.type}</Badge>}
               {niche.business_type && <Badge>{niche.business_type}</Badge>}
-              {scores && <ScorePills scores={scores} />}
             </section>
 
             {notesBody && (
@@ -170,6 +170,15 @@ export function NicheDrawer({
               </section>
             )}
 
+            {scores && (
+              <section>
+                <h3 className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-neutral-500">
+                  Fit score (4 + 1)
+                </h3>
+                <ScoreBreakdown scores={scores} />
+              </section>
+            )}
+
             {niche.adjacencies && niche.adjacencies.length > 0 && (
               <section>
                 <h3 className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-neutral-500">
@@ -183,29 +192,7 @@ export function NicheDrawer({
               </section>
             )}
 
-            {niche.buy_box && (
-              <section>
-                <h3 className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-neutral-500">
-                  Buy box
-                </h3>
-                <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                  {niche.buy_box.headcount_min != null && (
-                    <>
-                      <dt className="text-neutral-500">Headcount</dt>
-                      <dd className="font-mono tabular-nums">
-                        {niche.buy_box.headcount_min}–{niche.buy_box.headcount_max ?? "?"}
-                      </dd>
-                    </>
-                  )}
-                  {niche.buy_box.notes && (
-                    <>
-                      <dt className="text-neutral-500">Notes</dt>
-                      <dd className="col-span-2 text-neutral-700">{niche.buy_box.notes}</dd>
-                    </>
-                  )}
-                </dl>
-              </section>
-            )}
+            <BuyBox niche={niche} />
 
             <section>
               <h3 className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-neutral-500">

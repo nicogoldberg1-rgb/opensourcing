@@ -1,0 +1,1 @@
+{"gate": "G4", "status": "halted_awaiting_human_activation", "sequence_id": 9101, "sequence_name": "TEST_hipaa-compliance-software-2026-06-14", "sequence_status": "new", "contact_count": 36, "conviction": "High", "tier": "B", "steps": "LinkedIn Day 0 + 6 emails over 23 days", "channels": "34 LinkedIn + email, 2 email-only"}

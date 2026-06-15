@@ -157,6 +157,14 @@ export function DigestPanel({
             <p className="text-sm text-neutral-500">No log yet.</p>
           )}
         </div>
+        <div className="border-t border-neutral-200 bg-neutral-50/60 px-6 py-2.5 text-[11px] leading-relaxed text-neutral-500">
+          <span className="font-medium text-neutral-600">How this runs each night:</span>{" "}
+          the autopilot picks the top niche in the queue and builds an outreach
+          sequence for it — or, if the queue is empty, it brainstorms{" "}
+          <span className="font-medium text-neutral-600">3 new industries</span> into{" "}
+          <span className="font-medium text-neutral-600">Proposed</span> for your
+          review. Nothing sends or spends without your approval.
+        </div>
       </div>
     </div>
   );

@@ -6,144 +6,324 @@
   },
   "industries": [
     {
-      "id": "industrial-bakeries",
-      "slug": "industrial-bakeries",
-      "name": "Industrial Bakeries",
+      "id": "fire-life-safety-inspection",
+      "slug": "fire-life-safety-inspection",
+      "name": "Fire & Life Safety Inspection",
       "status": "proposed",
-      "source": "dashboard-manual",
-      "notes": "Wholesale bread/roll producers serving regional grocery + foodservice.",
-      "proposed_at": "2026-06-01T22:25:36.602Z",
+      "source": "orchestrator-brainstorm",
+      "proposed_at": "2026-05-28T16:00:00Z",
+      "notes": "Fragmented field of regional shops that keep fire alarms, sprinklers, and extinguishers up to code for commercial buildings. The work is recurring and legally required, the owners are mostly tradespeople in their 50s and 60s, and almost no one has rolled them up. I'd want to be the buyer who keeps the technicians and the local reputation while finally putting real scheduling and software behind it. Tailwinds: tightening fire codes, mandatory recurring inspections, and an aging owner base with few successors.",
+      "scores": {
+        "growth": 3,
+        "size": 4,
+        "criticality": 5,
+        "penetration": 4,
+        "quality": 4
+      },
+      "adjacencies": [
+        "Sprinkler testing",
+        "Backflow testing",
+        "Security alarm monitoring"
+      ],
+      "buy_box": {
+        "revenue_min": 3000000,
+        "revenue_max": 12000000,
+        "ebitda_min": 600000,
+        "ebitda_max": 2400000,
+        "headcount_min": 10,
+        "headcount_max": 60,
+        "geography": "US, regional",
+        "ownership": "Founder / owner-operated",
+        "notes": "Recurring inspection & testing contracts; licensed technicians."
+      },
       "history": [
         {
-          "at": "2026-06-01T22:25:36.602Z",
+          "at": "2026-05-28T16:00:00Z",
           "status": "proposed",
-          "reason": "investigated from seed (fixture)"
+          "reason": "brainstormed by orchestrator"
         }
       ]
     },
     {
-      "id": "marine-welding",
-      "slug": "marine-welding",
-      "name": "Marine Welding & Fabrication",
-      "status": "seed",
-      "source": "nico-seed",
-      "notes": "Dock and hull repair shops, aging owners.",
-      "proposed_at": "2026-05-27T10:00:00Z"
+      "id": "medical-billing-rcm",
+      "slug": "medical-billing-rcm",
+      "name": "Medical Billing / RCM",
+      "status": "proposed",
+      "source": "dashboard-manual",
+      "proposed_at": "2026-05-30T15:00:00Z",
+      "notes": "Small revenue-cycle-management shops that handle billing and collections for independent medical practices. Practices hate billing and rarely bring it back in-house once they outsource it, so the revenue is sticky and referral-driven. The owners are often former practice managers nearing retirement with no obvious successor. Tailwinds: rising billing complexity, physician practices staying independent, and steady demographic demand for care.",
+      "scores": {
+        "growth": 4,
+        "size": 4,
+        "criticality": 5,
+        "penetration": 3,
+        "quality": 3
+      },
+      "adjacencies": [
+        "Medical coding",
+        "Credentialing services",
+        "Dental billing"
+      ],
+      "buy_box": {
+        "revenue_min": 2000000,
+        "revenue_max": 10000000,
+        "ebitda_min": 500000,
+        "ebitda_max": 2500000,
+        "headcount_min": 15,
+        "headcount_max": 80,
+        "geography": "US",
+        "ownership": "Founder-owned",
+        "notes": "Recurring percent-of-collections contracts; sticky once outsourced."
+      },
+      "history": [
+        {
+          "at": "2026-05-30T15:00:00Z",
+          "status": "proposed",
+          "reason": "added via dashboard"
+        }
+      ]
     },
     {
-      "id": "compliance-software",
-      "slug": "compliance-software",
-      "name": "Compliance Software",
-      "status": "proposed",
-      "source": "orchestrator-brainstorm",
-      "notes": "Vertical GRC SaaS for regulated industries. Tailwinds: rising regulatory burden, AI-flattening of horizontal GRC. 4+1: G5 S4 C5 P3 Q5.",
+      "id": "veterinary-practice-mgmt-software",
+      "slug": "veterinary-practice-mgmt-software",
+      "name": "Veterinary Practice Mgmt Software",
+      "status": "approved",
+      "source": "dashboard-manual",
+      "proposed_at": "2026-04-18T15:00:00Z",
+      "approved_at": "2026-05-12T17:00:00Z",
+      "notes": "Vertical software that runs the front and back office of independent veterinary clinics \u2014 scheduling, records, billing, reminders. Switching costs are high once a clinic runs on it, churn is low, and the independent-vet market is still huge and under-consolidated. I'd want to take a beloved but under-resourced product and give it the engineering and support it never had. Tailwinds: pet-spend growth, corporate consolidation pushing independents to differentiate, and cloud migration off legacy installs.",
+      "scores": {
+        "growth": 4,
+        "size": 4,
+        "criticality": 4,
+        "penetration": 3,
+        "quality": 5
+      },
+      "adjacencies": [
+        "Dental practice software",
+        "Veterinary telehealth",
+        "Pet pharmacy software"
+      ],
+      "business_type": "Vertical SaaS",
+      "buy_box": {
+        "business_type": "Vertical SaaS",
+        "revenue_min": 1000000,
+        "revenue_max": 7000000,
+        "ebitda_min": 400000,
+        "ebitda_max": 2200000,
+        "headcount_min": 10,
+        "headcount_max": 50,
+        "geography": "US / Canada",
+        "ownership": "Founder-owned, no PE",
+        "notes": "Sticky, recurring SaaS; high switching costs."
+      },
+      "history": [
+        {
+          "at": "2026-04-18T15:00:00Z",
+          "status": "proposed",
+          "reason": "added via dashboard"
+        },
+        {
+          "at": "2026-05-12T17:00:00Z",
+          "status": "approved",
+          "reason": "strong fit, greenlit"
+        }
+      ]
+    },
+    {
+      "id": "hipaa-compliance-software",
+      "slug": "hipaa-compliance-software",
+      "name": "HIPAA Compliance Software",
+      "status": "queued",
+      "source": "dashboard-manual",
+      "proposed_at": "2026-05-20T15:00:00Z",
+      "approved_at": "2026-06-01T16:00:00Z",
+      "queued_at": "2026-06-12T16:00:00Z",
+      "notes": "Software that helps clinics and small hospital systems stay HIPAA-compliant \u2014 risk assessments, policy management, training, and audit trails. The smallest providers carry the most risk and can least afford a compliance team, which is exactly where a focused product wins. It is my dream to take one of these and scale it the right way across the country. Tailwinds: rising enforcement and breach penalties, the shift to cloud EHRs, and vendor-risk requirements pushing every practice toward real compliance tooling.",
       "scores": {
         "growth": 5,
         "size": 4,
         "criticality": 5,
         "penetration": 3,
-        "quality": 5
+        "quality": 4
       },
-      "proposed_at": "2026-05-21T10:00:00Z",
       "adjacencies": [
-        "healthcare-compliance",
-        "financial-compliance"
+        "SOC 2 compliance software",
+        "Vendor risk management",
+        "Security awareness training"
+      ],
+      "business_type": "Vertical SaaS",
+      "buy_box": {
+        "business_type": "Vertical SaaS",
+        "revenue_min": 1500000,
+        "revenue_max": 8000000,
+        "ebitda_min": 500000,
+        "ebitda_max": 2800000,
+        "headcount_min": 15,
+        "headcount_max": 75,
+        "geography": "US",
+        "ownership": "Founder-owned, bootstrapped",
+        "notes": "Recurring SaaS; clinics & small hospital systems."
+      },
+      "sequence_id": 9101,
+      "history": [
+        {
+          "at": "2026-05-20T15:00:00Z",
+          "status": "proposed",
+          "reason": "added via dashboard"
+        },
+        {
+          "at": "2026-06-01T16:00:00Z",
+          "status": "approved",
+          "reason": "high conviction"
+        },
+        {
+          "at": "2026-06-12T16:00:00Z",
+          "status": "queued",
+          "reason": "queued for a cycle"
+        }
       ]
     },
     {
-      "id": "regulated-medical-waste",
-      "slug": "regulated-medical-waste",
-      "name": "Regulated Medical Waste Disposal",
-      "status": "proposed",
-      "source": "orchestrator-brainstorm",
-      "notes": "Route-based recurring sharps/biohazard collection. Tailwinds: outpatient care growth + tightening disposal rules. 4+1: G4 S4 C5 P4 Q4.",
-      "scores": {
-        "growth": 4,
-        "size": 4,
-        "criticality": 5,
-        "penetration": 4,
-        "quality": 4
-      },
-      "proposed_at": "2026-05-22T10:00:00Z"
-    },
-    {
-      "id": "court-reporting",
-      "slug": "court-reporting",
-      "name": "Court Reporting Agencies",
-      "status": "approved",
-      "source": "orchestrator-brainstorm",
-      "notes": "Stenographer-owned agencies serving law firms. AI-transcription attack vector. 4+1: G3 S4 C4 P4 Q3.",
+      "id": "commercial-hvac-services",
+      "slug": "commercial-hvac-services",
+      "name": "Commercial HVAC Services",
+      "status": "activated",
+      "source": "dashboard-manual",
+      "proposed_at": "2026-03-15T15:00:00Z",
+      "approved_at": "2026-04-10T16:00:00Z",
+      "queued_at": "2026-05-08T16:00:00Z",
+      "notes": "Regional commercial HVAC service and maintenance companies on recurring contracts for offices, schools, and light industrial buildings. Maintenance agreements throw off predictable revenue, the trade is graying fast, and private equity has only touched the largest players. The plan is to keep the crews, lock in the service contracts, and add the back-office systems these shops never built. Tailwinds: aging equipment replacement cycles, energy-efficiency retrofits, and a shrinking pool of licensed technicians.",
       "scores": {
         "growth": 3,
-        "size": 4,
+        "size": 5,
         "criticality": 4,
         "penetration": 4,
         "quality": 3
       },
-      "approved_at": "2026-05-23T10:00:00Z"
+      "adjacencies": [
+        "Commercial refrigeration",
+        "Building automation",
+        "Plumbing services"
+      ],
+      "buy_box": {
+        "revenue_min": 5000000,
+        "revenue_max": 20000000,
+        "ebitda_min": 800000,
+        "ebitda_max": 3500000,
+        "headcount_min": 20,
+        "headcount_max": 120,
+        "geography": "US, regional",
+        "ownership": "Owner-operated",
+        "notes": "Recurring service & maintenance contracts; licensed techs."
+      },
+      "sequence_id": 9103,
+      "companies_contacted": 42,
+      "history": [
+        {
+          "at": "2026-03-15T15:00:00Z",
+          "status": "proposed",
+          "reason": "added via dashboard"
+        },
+        {
+          "at": "2026-04-10T16:00:00Z",
+          "status": "approved",
+          "reason": "greenlit"
+        },
+        {
+          "at": "2026-05-08T16:00:00Z",
+          "status": "queued",
+          "reason": "queued"
+        },
+        {
+          "at": "2026-05-22T16:00:00Z",
+          "status": "activated",
+          "reason": "sequence activated in Reply.io"
+        }
+      ]
     },
     {
-      "id": "tpa-health-plans",
-      "slug": "tpa-health-plans",
-      "name": "TPAs for Self-Funded Health Plans",
-      "status": "approved",
-      "source": "orchestrator-brainstorm",
-      "notes": "Asset-light BPO on recurring PEPM fees. Tailwind: shift to self-funded plans. 4+1: G4 S4 C5 P4 Q4.",
+      "id": "legal-case-management-software",
+      "slug": "legal-case-management-software",
+      "name": "Legal Case Management Software",
+      "status": "completed",
+      "source": "dashboard-manual",
+      "proposed_at": "2026-02-10T15:00:00Z",
+      "approved_at": "2026-03-05T16:00:00Z",
+      "queued_at": "2026-03-20T16:00:00Z",
+      "cycle_complete_at": "2026-04-15T16:00:00Z",
+      "completed": "2026-04-30T16:00:00Z",
+      "notes": "Case-management software for small law firms \u2014 the two- and three-lawyer shops that run on whatever actually fits how they work. Once a firm runs its matters, deadlines, and billing on a tool, it almost never leaves, and the small-firm market is enormous and poorly served. I'd want to take a product lawyers already trust and finally give it the support and roadmap it deserves. Tailwinds: solo and small-firm formation, cloud adoption in legal, and demand for built-in billing and getting-paid features.",
       "scores": {
         "growth": 4,
-        "size": 4,
-        "criticality": 5,
-        "penetration": 4,
-        "quality": 4
-      },
-      "approved_at": "2026-05-24T10:00:00Z"
-    },
-    {
-      "id": "association-management",
-      "slug": "association-management",
-      "name": "Association Management Companies",
-      "status": "queued",
-      "source": "orchestrator-brainstorm",
-      "notes": "Outsourced back-office for trade associations. 4+1: G3 S4 C4 P4 Q4.",
-      "scores": {
-        "growth": 3,
         "size": 4,
         "criticality": 4,
-        "penetration": 4,
+        "penetration": 3,
         "quality": 4
       },
-      "queued_at": "2026-05-25T10:00:00Z"
+      "adjacencies": [
+        "Legal billing software",
+        "Document automation",
+        "Client intake software"
+      ],
+      "business_type": "Vertical SaaS",
+      "buy_box": {
+        "business_type": "Vertical SaaS",
+        "revenue_min": 1000000,
+        "revenue_max": 6000000,
+        "ebitda_min": 300000,
+        "ebitda_max": 2000000,
+        "headcount_min": 10,
+        "headcount_max": 60,
+        "geography": "US",
+        "ownership": "Founder-owned",
+        "notes": "Sticky SaaS; small law firms."
+      },
+      "sequence_id": 9102,
+      "companies_contacted": 20,
+      "response_rate": 0.2,
+      "history": [
+        {
+          "at": "2026-02-10T15:00:00Z",
+          "status": "proposed",
+          "reason": "added via dashboard"
+        },
+        {
+          "at": "2026-03-05T16:00:00Z",
+          "status": "approved",
+          "reason": "greenlit"
+        },
+        {
+          "at": "2026-04-15T16:00:00Z",
+          "status": "cycle_complete",
+          "reason": "cycle done, sequence built"
+        },
+        {
+          "at": "2026-04-30T16:00:00Z",
+          "status": "completed",
+          "reason": "outreach complete \u2014 4 replies"
+        }
+      ]
     },
     {
-      "id": "legal-case-mgmt",
-      "slug": "legal-case-mgmt",
-      "name": "Legal Case Management Software",
-      "status": "cycle_complete",
-      "source": "orchestrator-brainstorm",
-      "notes": "B2B SaaS, recurring revenue, compliance-heavy.",
-      "sequence_id": 9002,
-      "cycle_complete_at": "2026-04-10T10:00:00Z",
-      "scores": {
-        "growth": 4,
-        "size": 4,
-        "criticality": 5,
-        "penetration": 4,
-        "quality": 5
-      }
-    },
-    {
-      "id": "elevator-inspection",
-      "slug": "elevator-inspection",
+      "id": "independent-elevator-inspection",
+      "slug": "independent-elevator-inspection",
       "name": "Independent Elevator Inspection",
       "status": "rejected",
       "source": "orchestrator-brainstorm",
-      "notes": "Non-OEM elevator service.",
-      "rejected_at": "2026-05-22T18:54:00Z",
+      "proposed_at": "2026-05-05T15:00:00Z",
+      "rejected_at": "2026-05-15T16:00:00Z",
+      "notes": "Third-party elevator inspection and testing. Attractive for the recurring, mandated work, but the field is heavily licensed, regionally consolidated, and conflict-of-interest rules limit who can inspect what. Passing for now. Tailwinds: mandated recurring inspections and aging equipment \u2014 but the moats favor incumbents.",
       "history": [
         {
-          "at": "2026-05-22T18:54:00Z",
+          "at": "2026-05-05T15:00:00Z",
+          "status": "proposed",
+          "reason": "brainstormed by orchestrator"
+        },
+        {
+          "at": "2026-05-15T16:00:00Z",
           "status": "rejected",
-          "reason": "not tech-forward enough"
+          "reason": "Too consolidated and license-gated; little room for a first-time buyer."
         }
       ]
     }

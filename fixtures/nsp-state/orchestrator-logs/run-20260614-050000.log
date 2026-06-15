@@ -1,0 +1,14 @@
+=== nsp-orchestrator run 20260614-050000 (FIXTURE) ===
+----- begin claude output -----
+## Last night's run — done
+
+**Queue had 1 item**, ran a cycle on **HIPAA Compliance Software**.
+
+| Phase | Outcome |
+|---|---|
+| Search | ~200 matches |
+| Screen | Kept 50 of 200 |
+| Contacts | 36 found |
+| Sequence | Built (#9101), awaiting your activation |
+
+Delivery: Telegram sent.

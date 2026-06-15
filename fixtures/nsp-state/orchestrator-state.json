@@ -1,7 +1,7 @@
 {
-  "last_run_at": "2026-06-01T05:00:00Z",
-  "last_run_id": "fixture-run-0001",
-  "last_run_outcome": "idle_brainstorm",
-  "last_niche": "none",
-  "last_summary": "[fixture] Empty queue; brainstormed 3 proposals (medical waste, TPA, AMCs). Telegram delivered."
+  "last_run_at": "2026-06-14T05:00:00Z",
+  "last_run_id": "fixture-run-0002",
+  "last_run_outcome": "cycle_halted_g4",
+  "last_niche": "hipaa-compliance-software",
+  "last_summary": "Ran a cycle on HIPAA Compliance Software \u2014 built sequence #9101 (36 contacts), halted at G4 awaiting your activation."
 }

@@ -4,7 +4,7 @@ import path from "node:path";
 import os from "node:os";
 import { Router } from "express";
 import { AUTOPILOT_REPO, NSP_STATE_DIR, TRACKER_JSON } from "../paths.js";
-import { addProposed, isValidStatus, setStatus } from "../lib/state-cli.js";
+import { addProposed, isValidStatus, setBuyBox, setStatus } from "../lib/state-cli.js";
 import { executeRunCycle } from "../lib/executors.js";
 import { resolveIdentity } from "../lib/roles.js";
 import { createRequest } from "../lib/requests.js";
@@ -303,4 +303,52 @@ nichesRouter.post("/:slug/run-cycle-now", async (req, res) => {
     return;
   }
   res.json({ ok: true, message: result.message });
+});
+
+
+const NUM_FIELDS = ["revenue_min","revenue_max","ebitda_min","ebitda_max","headcount_min","headcount_max"] as const;
+const STR_FIELDS = ["geography","ownership","notes","business_type"] as const;
+
+nichesRouter.patch("/:slug/buy-box", async (req, res) => {
+  const { slug } = req.params;
+  const id = await resolveIdentity(req);
+  if (id.role === "viewer") {
+    res.status(403).json({ error: "forbidden" });
+    return;
+  }
+  const body = (req.body ?? {}) as Record<string, unknown>;
+  const buyBox: Record<string, unknown> = {};
+  for (const f of NUM_FIELDS) {
+    if (f in body) {
+      const v = body[f];
+      if (v === null || v === "") { buyBox[f] = null; continue; }
+      const n = Number(v);
+      if (!Number.isFinite(n) || n < 0) {
+        res.status(400).json({ error: "invalid_number", field: f });
+        return;
+      }
+      buyBox[f] = n;
+    }
+  }
+  for (const f of STR_FIELDS) {
+    if (f in body) {
+      const v = body[f];
+      if (v !== null && typeof v !== "string") {
+        res.status(400).json({ error: "invalid_string", field: f });
+        return;
+      }
+      buyBox[f] = v === "" ? null : v;
+    }
+  }
+  if (Object.keys(buyBox).length === 0) {
+    res.status(400).json({ error: "no_fields" });
+    return;
+  }
+  try {
+    const niche = await setBuyBox(slug, buyBox);
+    res.json({ ok: true, niche });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: "set_buy_box_failed", message });
+  }
 });

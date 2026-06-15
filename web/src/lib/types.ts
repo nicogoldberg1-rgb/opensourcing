@@ -22,6 +22,19 @@ export type NicheScores = {
   quality: number;
 };
 
+export type BuyBox = {
+  business_type?: string | null;
+  revenue_min?: number | null;
+  revenue_max?: number | null;
+  ebitda_min?: number | null;
+  ebitda_max?: number | null;
+  headcount_min?: number | null;
+  headcount_max?: number | null;
+  geography?: string | null;
+  ownership?: string | null;
+  notes?: string | null;
+};
+
 export type Niche = {
   id: string;
   slug?: string;
@@ -37,12 +50,7 @@ export type Niche = {
   companies_contacted?: number;
   response_rate?: number | null;
   business_type?: string;
-  buy_box?: {
-    business_type?: string;
-    notes?: string;
-    headcount_min?: number;
-    headcount_max?: number;
-  };
+  buy_box?: BuyBox;
   created?: string;
   completed?: string | null;
   proposed_at?: string;

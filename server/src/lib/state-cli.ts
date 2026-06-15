@@ -90,6 +90,22 @@ export async function setStatus(
   return JSON.parse(stdout);
 }
 
+// Update a niche's buy_box (descriptive acquisition criteria — not pipeline
+// status, so it doesn't go through state.py's status machine). Read-merge-write
+// on the tracker JSON the dashboard reads, in both fixture and real mode.
+export async function setBuyBox(
+  slug: string,
+  buyBox: Record<string, unknown>,
+): Promise<unknown> {
+  const raw = await fs.readFile(TRACKER_JSON, "utf8");
+  const data = JSON.parse(raw) as { industries: Record<string, unknown>[] };
+  const item = data.industries.find((n) => n.id === slug || n.slug === slug);
+  if (!item) throw new Error(`no niche with slug/id: ${slug}`);
+  item.buy_box = { ...((item.buy_box as Record<string, unknown>) ?? {}), ...buyBox };
+  await fs.writeFile(TRACKER_JSON, JSON.stringify(data, null, 2));
+  return item;
+}
+
 export async function summary(): Promise<unknown> {
   const { stdout } = await execFileP("python3", [STATE_PY, "summary"], {
     timeout: 15_000,

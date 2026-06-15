@@ -1,5 +1,7 @@
 import type {
   ActionRequest,
+  BuyBox,
+  Niche,
   CycleDetail,
   CycleSummary,
   NicheStatus,
@@ -121,6 +123,11 @@ export const api = {
     jsonFetch<{ ok: true; count: number; message: string }>(
       "/api/niches/bulk/investigate",
       { method: "POST", body: JSON.stringify({ slugs }) },
+    ),
+  updateBuyBox: (slug: string, buyBox: Partial<BuyBox>) =>
+    jsonFetch<{ ok: true; niche: Niche }>(
+      `/api/niches/${encodeURIComponent(slug)}/buy-box`,
+      { method: "PATCH", body: JSON.stringify(buyBox) },
     ),
   getMe: () => jsonFetch<Me>("/api/me"),
   getRequests: () => jsonFetch<RequestsPayload>("/api/requests"),

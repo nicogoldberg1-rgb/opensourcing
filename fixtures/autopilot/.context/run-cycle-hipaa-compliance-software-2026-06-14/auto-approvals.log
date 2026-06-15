@@ -1,0 +1,5 @@
+{"at": "2026-06-14T05:05:00Z", "gate": "G1", "amount": 0, "cap": 0}
+{"at": "2026-06-14T05:12:00Z", "gate": "G2", "amount": 200, "cap": 250}
+{"at": "2026-06-14T05:25:00Z", "sub_skill": "screen-companies", "n_contacts": 50, "n_risks_flagged": 3}
+{"at": "2026-06-14T05:40:00Z", "gate": "G3", "amount": 36, "cap": 50}
+{"at": "2026-06-14T05:55:00Z", "sub_skill": "find-contacts", "n_contacts": 36}
