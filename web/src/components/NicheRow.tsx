@@ -10,7 +10,7 @@ import {
   statusAddedTimestamp,
   truncate,
 } from "../lib/format";
-import { ScorePills } from "./ui/ScorePills";
+import { ScoreAverage } from "./ui/ScoreAverage";
 import { Badge } from "./ui/Badge";
 import { confirmDialog, promptDialog } from "./ui/Dialog";
 import { cn } from "../lib/cn";
@@ -96,7 +96,7 @@ export const NicheRow = forwardRef<HTMLDivElement, NicheRowProps>(
             </h3>
             <div className="flex shrink-0 items-center gap-2 transition-opacity group-hover:invisible group-hover:opacity-0">
               {showStatusBadge && <Badge tone="neutral">{niche.status}</Badge>}
-              {scores && <ScorePills scores={scores} />}
+              {scores && <ScoreAverage scores={scores} />}
             </div>
           </div>
 

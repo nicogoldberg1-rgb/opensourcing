@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { ExternalLink, RefreshCw } from "lucide-react";
+import { SequenceLink } from "../components/SequenceLink";
 import { api } from "../lib/api";
 import type { Sequence } from "../lib/types";
 import { Badge } from "../components/ui/Badge";
@@ -245,15 +246,13 @@ function SequenceRow({ s }: { s: Sequence }) {
         {relativeFromIso(s.created)}
       </td>
       <td className="px-3 py-2.5">
-        <a
-          href={`https://run.reply.io/sequence/${s.id}`}
-          target="_blank"
-          rel="noreferrer"
+        <SequenceLink
+          id={s.id}
           className="inline-flex items-center gap-1 rounded px-1.5 py-1 text-xs text-neutral-500 transition-colors hover:bg-indigo-50 hover:text-indigo-700"
           onClick={(e) => e.stopPropagation()}
         >
           Open <ExternalLink size={11} />
-        </a>
+        </SequenceLink>
       </td>
     </tr>
   );

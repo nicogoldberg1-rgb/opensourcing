@@ -11,6 +11,7 @@ import CycleListPage from "./pages/CycleList";
 import SpendPage from "./pages/Spend";
 import RoadmapPage from "./pages/Roadmap";
 import RequestsPage from "./pages/Requests";
+import SequencePreview from "./pages/SequencePreview";
 
 function Shell() {
   const [subtitle, setSubtitle] = useState<string | undefined>(undefined);
@@ -19,6 +20,7 @@ function Shell() {
       <Route element={<LayoutWrapper subtitle={subtitle} setSubtitle={setSubtitle} />}>
         <Route index element={<HomePage />} />
         <Route path="/sequences" element={<SequencesPage />} />
+        <Route path="/sequence/:id" element={<SequencePreview />} />
         <Route path="/cycle" element={<CycleListPage />} />
         <Route path="/cycle/:id" element={<CyclePage />} />
         <Route path="/spend" element={<SpendPage />} />

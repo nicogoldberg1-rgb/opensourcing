@@ -63,6 +63,22 @@ export type Niche = {
   history?: { at: string; status: string; reason?: string }[];
 };
 
+export type SequenceStep = {
+  step: number;
+  day: number;
+  channel: "linkedin" | "email" | "letter";
+  subject: string | null;
+  body: string;
+};
+
+export type SequenceDetail = {
+  id: number;
+  name: string;
+  niche_slug?: string;
+  sample_contact: Record<string, string> | null;
+  steps: SequenceStep[];
+};
+
 export type Tracker = {
   metadata?: Record<string, unknown>;
   industries: Niche[];

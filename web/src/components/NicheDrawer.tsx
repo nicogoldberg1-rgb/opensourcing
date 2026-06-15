@@ -17,6 +17,7 @@ import { Button } from "./ui/Button";
 import { Badge } from "./ui/Badge";
 import { ScoreBreakdown } from "./ui/ScoreBreakdown";
 import { BuyBox } from "./BuyBox";
+import { SequenceLink } from "./SequenceLink";
 import { confirmDialog } from "./ui/Dialog";
 
 type Action =
@@ -238,14 +239,12 @@ export function NicheDrawer({
                 <h3 className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-neutral-500">
                   Reply.io sequence
                 </h3>
-                <a
-                  href={`https://run.reply.io/sequences/${niche.sequence_id}`}
-                  target="_blank"
-                  rel="noreferrer"
+                <SequenceLink
+                  id={niche.sequence_id}
                   className="font-mono text-xs text-accent hover:underline"
                 >
                   #{niche.sequence_id} ↗
-                </a>
+                </SequenceLink>
               </section>
             )}
           </div>

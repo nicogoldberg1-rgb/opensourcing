@@ -93,8 +93,64 @@
       "peopleFinished": 12,
       "peopleActive": 30,
       "peoplePaused": 0,
-      "sample_contact": null,
-      "steps": []
+      "sample_contact": {
+        "first_name": "Carl",
+        "last_name": "Whitfield",
+        "title": "Owner & President",
+        "company": "Summit Mechanical Services",
+        "location": "Reno, NV"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "day": 0,
+          "channel": "linkedin",
+          "subject": null,
+          "body": "Hi Carl, I'm on a mission to scale commercial HVAC service companies, and Summit is one I really admire, the focus on keeping schools and offices running especially. Would love to connect."
+        },
+        {
+          "step": 2,
+          "day": 3,
+          "channel": "email",
+          "subject": "An admirer of what you've built at Summit Mechanical Services",
+          "body": "Hi Carl,\n\nAs I've been getting to know the commercial HVAC world, Summit Mechanical Services kept coming up, and what stuck with me is that you built a service business people actually rely on, the kind where a school or office calls and someone shows up and fixes it right. Keeping crews that good together, on contracts customers renew year after year, is harder than most people give it credit for.\n\nI started out as a public defender, and a lot of that job was just showing up and doing the unglamorous work that kept things from falling apart for people. I later spent time as Chief of Staff at a growing company, where I learned how much a business lives or dies on its operations and its people. Today I have a \"search fund\" backed by a dozen current and former CEOs, and it is my dream to take one great commercial HVAC company and scale it the right way across the country.\n\nI'd love to learn how you've built Summit Mechanical Services, and if you ever think about what growth or the right partner could look like, I'd be glad to talk. Would you be open to a quick 20-minute call in the coming weeks?\n\nWarmly,\nNico Goldberg"
+        },
+        {
+          "step": 3,
+          "day": 6,
+          "channel": "email",
+          "subject": "Re: An admirer of what you've built at Summit Mechanical Services",
+          "body": "Hi Carl,\n\nFollowing up on my note below. I know a cold email about a partnership is easy to set aside, so no pressure to reply quickly.\n\nIf it is ever useful, I am glad to share what I have been learning about where commercial HVAC is heading, even if Summit is not something you would ever consider changing. Mostly I am trying to understand the trade from the people who actually built in it.\n\nWarmly,\nNico"
+        },
+        {
+          "step": 4,
+          "day": 10,
+          "channel": "email",
+          "subject": "Connecting with a commercial HVAC entrepreneur",
+          "body": "Hi Carl,\n\nI wanted to say a bit more about what I am actually after, since cold notes can come across the wrong way. I am not a fund looking to buy a company and strip it for parts. I would want to partner with an owner like you and help Summit Mechanical Services grow into its next chapter without losing the crew and the reputation that make it work.\n\nIf that is ever a conversation worth having, even a year or two from now, I would love twenty minutes. And if you would rather just trade notes on the trade, I am glad to do that too.\n\nWarmly,\nNico"
+        },
+        {
+          "step": 5,
+          "day": 14,
+          "channel": "email",
+          "subject": "Re: Connecting with a commercial HVAC entrepreneur",
+          "body": "Hi Carl,\n\nI know you are busy, and your season does not slow down, so just a short nudge. I am still very interested in Summit Mechanical Services and happy to talk whenever the timing is right for you.\n\nWarmly,\nNico"
+        },
+        {
+          "step": 6,
+          "day": 18,
+          "channel": "email",
+          "subject": "Comparing notes on where commercial HVAC is headed",
+          "body": "Hi Carl,\n\nNo agenda here, just something I keep turning over that you would actually know. From the outside it looks like the shops that thrive are the ones that turned service and maintenance contracts into the backbone of the business, instead of living job to job on installs. I may have that wrong, and I would value your read.\n\nEither way, thank you for the work Summit Mechanical Services does keeping those buildings running.\n\nWarmly,\nNico"
+        },
+        {
+          "step": 7,
+          "day": 23,
+          "channel": "email",
+          "subject": "Young entrepreneur still hoping to connect on Summit Mechanical Services",
+          "body": "Hi Carl,\n\nThis is my last note, so I will keep it short. I have a lot of respect for what you have built at Summit Mechanical Services, and I did not want to keep filling your inbox.\n\nIf you ever want to trade notes on the trade, or think about what a partnership could look like down the road, my door is open. Thank you for the work you do.\n\nWarmly,\nNico"
+        }
+      ]
     },
     {
       "id": 9102,

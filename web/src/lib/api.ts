@@ -13,6 +13,7 @@ import type {
   RoadmapCard,
   RoadmapColumn,
   SequencesPayload,
+  SequenceDetail,
   SpendPayload,
   Tracker,
 } from "./types";
@@ -85,6 +86,9 @@ export const api = {
   getCycle: (id: string) =>
     jsonFetch<CycleDetail>(`/api/cycles/${encodeURIComponent(id)}`),
   getSpend: () => jsonFetch<SpendPayload>("/api/spend"),
+  getSequenceDetail: (id: number) =>
+    jsonFetch<SequenceDetail>(`/api/sequences/${id}/detail`),
+
   getPriorities: () => jsonFetch<Priorities>("/api/priorities"),
   setLaneOrder: (lane: "approved" | "queued", order: string[]) =>
     jsonFetch<Priorities>(`/api/priorities/${lane}`, {

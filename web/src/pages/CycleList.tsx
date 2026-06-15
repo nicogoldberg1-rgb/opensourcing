@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { SequenceLink } from "../components/SequenceLink";
 import { Link, useOutletContext } from "react-router-dom";
 import {
   AlertOctagon,
@@ -253,21 +254,19 @@ function CycleRow({ c }: { c: CycleSummary }) {
           </div>
           {v === "stuck" && haltReason && (
             <div className="mt-1 truncate text-[11px] text-red-700" title={haltReason}>
-              {haltReason}
+              <span className="font-medium">Halted:</span> {haltReason}
             </div>
           )}
         </div>
 
         {v === "awaiting_activation" && seqId && (
-          <a
-            href={`https://run.reply.io/sequence/${seqId}`}
-            target="_blank"
-            rel="noreferrer"
+          <SequenceLink
+            id={seqId}
             onClick={(e) => e.stopPropagation()}
             className="inline-flex shrink-0 items-center gap-1 rounded-md bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-900 hover:bg-amber-200"
           >
-            Activate
-          </a>
+            View sequence
+          </SequenceLink>
         )}
 
         <ArrowRight

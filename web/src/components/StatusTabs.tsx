@@ -13,7 +13,7 @@ const PRIMARY: TabDef[] = [
   { key: "approved", label: "Approved", matches: ["approved"] },
   { key: "queued", label: "Queued", matches: ["queued"] },
   { key: "in_progress", label: "In progress", matches: ["in_progress"] },
-  { key: "cycle_complete", label: "Complete", matches: ["cycle_complete"] },
+  { key: "cycle_complete", label: "Complete", matches: ["cycle_complete", "activated", "completed", "partial"] },
 ];
 
 const SECONDARY: TabDef[] = [
@@ -22,14 +22,7 @@ const SECONDARY: TabDef[] = [
   {
     key: "archive",
     label: "Archive",
-    matches: [
-      "completed",
-      "partial",
-      "ready",
-      "researched",
-      "in_conversation",
-      "activated",
-    ],
+    matches: ["ready", "researched", "in_conversation"],
   },
 ];
 

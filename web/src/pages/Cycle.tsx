@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import { SequenceLink } from "../components/SequenceLink";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -500,14 +501,12 @@ function G4PendingCard({ data }: { data: Record<string, unknown> }) {
         )}
       </dl>
       {seqId && (
-        <a
-          href={`https://run.reply.io/sequence/${seqId}`}
-          target="_blank"
-          rel="noreferrer"
+        <SequenceLink
+          id={seqId}
           className="mt-3 inline-flex items-center gap-1 rounded-md bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-900 hover:bg-amber-200"
         >
-          Open in Reply.io <ExternalLink size={11} />
-        </a>
+          View the built sequence <ExternalLink size={11} />
+        </SequenceLink>
       )}
     </div>
   );
