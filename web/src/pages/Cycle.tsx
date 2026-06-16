@@ -273,7 +273,7 @@ function Pair({
 
 function PhaseTimeline({ phases }: { phases: CyclePhase[] }) {
   return (
-    <div className="rounded-lg border border-neutral-200 bg-white p-5 shadow-sm">
+    <div data-tour="cycle-phases" className="rounded-lg border border-neutral-200 bg-white p-5 shadow-sm">
       <h3 className="mb-4 text-sm font-semibold text-neutral-900">Pipeline</h3>
       <ol className="relative space-y-1">
         {phases.map((p, i) => (
@@ -503,6 +503,7 @@ function G4PendingCard({ data }: { data: Record<string, unknown> }) {
       {seqId && (
         <SequenceLink
           id={seqId}
+          data-tour="view-sequence"
           className="mt-3 inline-flex items-center gap-1 rounded-md bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-900 hover:bg-amber-200"
         >
           View the built sequence <ExternalLink size={11} />

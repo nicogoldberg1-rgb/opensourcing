@@ -141,7 +141,7 @@ export default function RequestsPage() {
         </div>
       )}
 
-      <section>
+      <section data-tour="requests-inbox">
         <h2 className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-neutral-500">
           Pending {pending.length > 0 && `(${pending.length})`}
         </h2>

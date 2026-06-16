@@ -476,10 +476,11 @@ export function NicheList({
             </SortableContext>
           </DndContext>
         ) : (
-          filtered.map((n) => (
+          filtered.map((n, i) => (
             <NicheRow
               key={n.id}
               niche={n}
+              anchor={i === 0}
               showStatusBadge={activeTab === "archive"}
               onOpen={onOpenNiche}
               onQuickAction={onQuickAction}

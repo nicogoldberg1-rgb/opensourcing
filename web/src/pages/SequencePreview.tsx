@@ -93,7 +93,7 @@ export default function SequencePreview() {
               demo. See the HIPAA or Legal sequences for a full preview.
             </div>
           ) : (
-            <ol className="space-y-3">
+            <ol data-tour="sequence-steps" className="space-y-3">
               {detail.steps.map((step) => {
                 const meta = CHANNEL_META[step.channel];
                 const Icon = meta.Icon;

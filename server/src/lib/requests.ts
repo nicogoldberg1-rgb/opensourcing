@@ -2,6 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomUUID } from "node:crypto";
+import { FIXTURE_MODE } from "../config.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.resolve(__dirname, "../../data");
@@ -27,13 +28,33 @@ export type ActionRequest = {
 
 type Store = { requests: ActionRequest[] };
 
+// Demo only: a sample intern request so the approval inbox isn't empty on a
+// fresh demo. Real mode starts empty. Approving/denying it persists from then on.
+function demoSeed(): Store {
+  return {
+    requests: [
+      {
+        id: "demo-intern-request",
+        kind: "run-cycle",
+        slug: "veterinary-practice-mgmt-software",
+        label: 'Run a cycle on "Veterinary Practice Mgmt Software"',
+        requested_by: "intern@demo.example",
+        requested_at: "2026-06-15T09:00:00Z",
+        status: "pending",
+      },
+    ],
+  };
+}
+
 async function load(): Promise<Store> {
   try {
     const raw = await fs.readFile(FILE, "utf8");
     const parsed = JSON.parse(raw) as Store;
     return { requests: parsed.requests ?? [] };
   } catch (err) {
-    if ((err as NodeJS.ErrnoException).code === "ENOENT") return { requests: [] };
+    if ((err as NodeJS.ErrnoException).code === "ENOENT") {
+      return FIXTURE_MODE ? demoSeed() : { requests: [] };
+    }
     throw err;
   }
 }

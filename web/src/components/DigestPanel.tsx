@@ -113,7 +113,7 @@ export function DigestPanel({
         )}
       </header>
 
-      <div className="flex min-h-0 flex-1 flex-col rounded-lg border border-neutral-200 bg-white shadow-sm">
+      <div data-tour="digest" className="flex min-h-0 flex-1 flex-col rounded-lg border border-neutral-200 bg-white shadow-sm">
         <div className="flex items-center justify-between gap-3 border-b border-neutral-200 px-5 py-2.5">
           <div className="flex items-baseline gap-3">
             <h2 className="text-sm font-semibold text-neutral-900">

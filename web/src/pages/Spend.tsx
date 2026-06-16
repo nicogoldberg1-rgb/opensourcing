@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { ExternalLink, Info, RefreshCw } from "lucide-react";
+import { AlertTriangle, ExternalLink, Info, RefreshCw } from "lucide-react";
 import { api } from "../lib/api";
 import type { SpendPayload } from "../lib/types";
 import { Button } from "../components/ui/Button";
@@ -19,6 +19,16 @@ const MONTH_LABEL = (m: string) => {
   const d = new Date(Number(y), Number(mm) - 1, 1);
   return d.toLocaleString(undefined, { month: "long", year: "numeric" });
 };
+
+// Inven balance is a manually-refreshed cache; warn once it's older than this.
+const INVEN_STALE_DAYS = 3;
+
+function isStale(fetchedIso: string | null): boolean {
+  if (!fetchedIso) return false;
+  const t = new Date(fetchedIso).getTime();
+  if (Number.isNaN(t)) return false;
+  return Date.now() - t > INVEN_STALE_DAYS * 86_400_000;
+}
 
 export default function SpendPage() {
   const ctx = useOutletContext<HomeContext>();
@@ -67,8 +77,12 @@ export default function SpendPage() {
         </div>
       )}
 
-      {data && <InvenSection data={data.inven} />}
-      {data && <AnthropicSection data={data.anthropic} />}
+      {data && (
+        <div data-tour="spend-usage" className="flex flex-col gap-5">
+          <InvenSection data={data.inven} />
+          <AnthropicSection data={data.anthropic} />
+        </div>
+      )}
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         {data && <LobSection data={data.lob} />}
       </div>
@@ -79,24 +93,32 @@ export default function SpendPage() {
 function InvenSection({ data }: { data: SpendPayload["inven"] }) {
   const balance = data.balance.balance;
   const fetched = data.balance.fetched_at;
+  const stale = isStale(fetched);
   const tm = data.this_month;
 
   return (
     <section className="rounded-lg border border-neutral-200 bg-white p-5 shadow-sm">
-      <header className="mb-4 flex items-baseline justify-between">
+      <header className="mb-4 flex items-baseline justify-between gap-3">
         <h2 className="text-sm font-semibold text-neutral-900">Inven credits</h2>
-        <span className="text-[11px] text-neutral-400">
-          {fetched ? (
-            <>
-              Balance as of{" "}
-              <span title={absoluteFromIso(fetched)}>
-                {relativeFromIso(fetched)}
-              </span>
-            </>
-          ) : (
-            "No balance cached"
-          )}
-        </span>
+        {fetched ? (
+          <span
+            className={cn(
+              "inline-flex items-center gap-1 text-[11px]",
+              stale ? "text-amber-600" : "text-neutral-400",
+            )}
+            title={
+              stale
+                ? `Cached balance is over ${INVEN_STALE_DAYS} days old — ask Claude to refresh it (see Spend docs).`
+                : absoluteFromIso(fetched)
+            }
+          >
+            {stale && <AlertTriangle size={11} className="-mt-px" />}
+            Balance as of {relativeFromIso(fetched)}
+            {stale && " · stale"}
+          </span>
+        ) : (
+          <span className="text-[11px] text-neutral-400">No balance cached</span>
+        )}
       </header>
 
       {balance ? (
@@ -126,10 +148,10 @@ function InvenSection({ data }: { data: SpendPayload["inven"] }) {
           Balance not cached yet. Ask Claude to run{" "}
           <code className="rounded bg-neutral-100 px-1 font-mono text-xs">
             mcp__inven__get_credit_balance
-          </code>{" "}
-          and write the result to{" "}
+          </code>
+          , then{" "}
           <code className="rounded bg-neutral-100 px-1 font-mono text-xs">
-            ~/Library/Application Support/nsp-autopilot/inven-credits.json
+            node scripts/write-inven-balance.mjs &lt;export&gt; &lt;contact&gt; &lt;ai&gt;
           </code>
           .
         </div>

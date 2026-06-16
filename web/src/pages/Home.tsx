@@ -138,7 +138,7 @@ export default function HomePage() {
         <main className="min-h-0 overflow-hidden">
           <DigestPanel data={lastRun} niches={tracker?.industries ?? []} />
         </main>
-        <aside className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 p-3 shadow-sm">
+        <aside data-tour="board" className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 p-3 shadow-sm">
           <div className="mb-2 flex items-baseline justify-between">
             <h2 className="text-sm font-semibold text-neutral-900">Niches</h2>
             <span className="text-[11px] text-neutral-400">

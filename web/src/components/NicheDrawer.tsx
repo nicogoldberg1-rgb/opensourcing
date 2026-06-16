@@ -17,6 +17,7 @@ import { Button } from "./ui/Button";
 import { Badge } from "./ui/Badge";
 import { ScoreBreakdown } from "./ui/ScoreBreakdown";
 import { BuyBox } from "./BuyBox";
+import { useSession } from "../lib/session";
 import { SequenceLink } from "./SequenceLink";
 import { confirmDialog } from "./ui/Dialog";
 
@@ -46,6 +47,8 @@ export function NicheDrawer({
       setRejectReason("");
     }
   }, [open, niche?.id]);
+
+  const { me } = useSession();
 
   if (!niche) return null;
 
@@ -92,6 +95,11 @@ export function NicheDrawer({
   };
 
   const confirmInvestigate = async () => {
+    // Demo: no confirmation popup — the button develops the seed instantly.
+    if (me?.fixture) {
+      await fire("investigate", { kind: "investigate" });
+      return;
+    }
     const ok = await confirmDialog({
       title: `Investigate "${niche.name}"?`,
       description:

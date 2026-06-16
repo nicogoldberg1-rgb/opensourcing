@@ -10,16 +10,18 @@ export function SequenceLink({
   className,
   children,
   onClick,
+  "data-tour": dataTour,
 }: {
   id: number;
   className?: string;
   children: ReactNode;
   onClick?: (e: MouseEvent) => void;
+  "data-tour"?: string;
 }) {
   const { me } = useSession();
   if (me?.fixture) {
     return (
-      <Link to={`/sequence/${id}`} className={className} onClick={onClick}>
+      <Link to={`/sequence/${id}`} className={className} onClick={onClick} data-tour={dataTour}>
         {children}
       </Link>
     );
@@ -31,6 +33,7 @@ export function SequenceLink({
       rel="noreferrer"
       className={className}
       onClick={onClick}
+      data-tour={dataTour}
     >
       {children}
     </a>

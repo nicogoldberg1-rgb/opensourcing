@@ -12,6 +12,7 @@ import SpendPage from "./pages/Spend";
 import RoadmapPage from "./pages/Roadmap";
 import RequestsPage from "./pages/Requests";
 import SequencePreview from "./pages/SequencePreview";
+import { TourProvider } from "./components/Tour";
 
 function Shell() {
   const [subtitle, setSubtitle] = useState<string | undefined>(undefined);
@@ -46,8 +47,10 @@ export default function App() {
     <BrowserRouter>
       <ToastProvider>
         <SessionProvider>
-          <Shell />
-          <DialogHost />
+          <TourProvider>
+            <Shell />
+            <DialogHost />
+          </TourProvider>
         </SessionProvider>
       </ToastProvider>
     </BrowserRouter>

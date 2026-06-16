@@ -31,6 +31,7 @@ type NicheRowProps = {
   selectable?: boolean;
   selected?: boolean;
   onToggleSelected?: (n: Niche) => void;
+  anchor?: boolean;
 };
 
 export const NicheRow = forwardRef<HTMLDivElement, NicheRowProps>(
@@ -46,6 +47,7 @@ export const NicheRow = forwardRef<HTMLDivElement, NicheRowProps>(
       selectable = false,
       selected = false,
       onToggleSelected,
+      anchor = false,
     },
     ref,
   ) {
@@ -57,6 +59,7 @@ export const NicheRow = forwardRef<HTMLDivElement, NicheRowProps>(
     return (
       <div
         ref={ref}
+        data-tour={anchor ? "niche-row" : undefined}
         style={style}
         onClick={() => {
           if (isDragging) return;

@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { cn } from "../lib/cn";
 import { useSession } from "../lib/session";
+import { TourButton } from "./Tour";
 
 const NAV: { to: string; label: string; internalOnly?: boolean }[] = [
   { to: "/", label: "Home" },
@@ -36,11 +37,12 @@ export function Layout({
             <span className="text-xs text-neutral-400">{subtitle}</span>
           )}
         </div>
-        <nav className="flex items-center gap-0.5 text-sm">
+        <nav data-tour="nav" className="flex items-center gap-0.5 text-sm">
           {NAV.filter((item) => !(item.internalOnly && me?.fixture)).map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
+              data-tour={item.to === "/spend" ? "nav-spend" : item.to === "/cycle" ? "nav-cycle" : undefined}
               end={item.to === "/"}
               className={({ isActive }) =>
                 cn(
@@ -60,6 +62,7 @@ export function Layout({
           {me && me.role !== "viewer" && (
             <NavLink
               to="/requests"
+              data-tour="nav-requests"
               className={({ isActive }) =>
                 cn(
                   "ml-1 inline-flex items-center gap-1.5 rounded px-2 py-1 transition-colors",
@@ -78,6 +81,8 @@ export function Layout({
             </NavLink>
           )}
 
+          {me?.fixture && <TourButton />}
+
           {/* Role pill */}
           {me && (
             <span
@@ -95,8 +100,18 @@ export function Layout({
         </nav>
       </header>
       {me?.fixture && (
-        <div className="shrink-0 bg-amber-100 px-6 py-1 text-center text-[11px] font-medium text-amber-800">
-          Demo mode — sample data you can explore freely. Nothing here sends real emails or spends money.
+        <div className="flex shrink-0 items-center justify-center gap-2 bg-amber-100 px-6 py-1 text-center text-[11px] font-medium text-amber-800">
+          <span>
+            Demo mode — sample data you can explore freely. Nothing here sends real emails or spends money.
+          </span>
+          <a
+            href="https://opensourcing.dev"
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-full bg-amber-800 px-2 py-0.5 text-[10px] font-semibold text-amber-50 hover:bg-amber-900"
+          >
+            Join the waitlist →
+          </a>
         </div>
       )}
       <Outlet context={context} />
