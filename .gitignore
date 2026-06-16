@@ -20,3 +20,11 @@ fixtures/nsp-state/industry-tracker.json
 
 # track the roles template (placeholder emails); real roles.json stays ignored
 !server/data/roles.example.json
+
+# internal docs — contain intern PII / internal-only detail; keep OUT of the public repo
+docs/ONBOARDING.md
+docs/ONBOARDING-HARRY.md
+docs/ADAPTERS.md
+
+# incremental TS build cache (artifact, shouldn't be tracked)
+web/tsconfig.tsbuildinfo

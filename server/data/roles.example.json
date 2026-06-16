@@ -1,6 +1,6 @@
 {
   "allowlist": {
-    "nico@partnerwithnico.com": "owner",
+    "owner@example.com": "owner",
     "sales-intern@example.com": "operator",
     "cs-intern@example.com": "viewer"
   },
