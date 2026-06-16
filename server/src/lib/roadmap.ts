@@ -1,6 +1,8 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { FIXTURE_MODE } from "../config.js";
+import { getSessionRoadmap, setSessionRoadmap } from "./demo-store.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.resolve(__dirname, "../../data");
@@ -25,6 +27,7 @@ export type RoadmapBoard = {
 const EMPTY: RoadmapBoard = { cards: [] };
 
 export async function loadBoard(): Promise<RoadmapBoard> {
+  if (FIXTURE_MODE) return (await getSessionRoadmap()) as RoadmapBoard;
   try {
     const raw = await fs.readFile(FILE, "utf8");
     const parsed = JSON.parse(raw) as RoadmapBoard;
@@ -36,6 +39,10 @@ export async function loadBoard(): Promise<RoadmapBoard> {
 }
 
 export async function saveBoard(board: RoadmapBoard): Promise<void> {
+  if (FIXTURE_MODE) {
+    await setSessionRoadmap(board);
+    return;
+  }
   await fs.mkdir(DATA_DIR, { recursive: true });
   await fs.writeFile(FILE, JSON.stringify(board, null, 2));
 }

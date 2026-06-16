@@ -3,8 +3,8 @@ import { spawn } from "node:child_process";
 import path from "node:path";
 import os from "node:os";
 import { Router } from "express";
-import { AUTOPILOT_REPO, DEMO_INVESTIGATE_JSON, NSP_STATE_DIR, TRACKER_JSON } from "../paths.js";
-import { addProposed, applyInvestigation, isValidStatus, setBuyBox, setStatus, type Investigation } from "../lib/state-cli.js";
+import { AUTOPILOT_REPO, DEMO_INVESTIGATE_JSON, NSP_STATE_DIR } from "../paths.js";
+import { addProposed, applyInvestigation, isValidStatus, loadTracker, setBuyBox, setStatus, type Investigation } from "../lib/state-cli.js";
 import { executeRunCycle } from "../lib/executors.js";
 import { resolveIdentity } from "../lib/roles.js";
 import { createRequest } from "../lib/requests.js";
@@ -48,8 +48,7 @@ async function loadReveal(slug: string, name: string): Promise<Investigation> {
 
 nichesRouter.get("/", async (_req, res) => {
   try {
-    const raw = await fs.readFile(TRACKER_JSON, "utf8");
-    res.json(JSON.parse(raw));
+    res.json(await loadTracker());
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     res.status(500).json({ error: "failed_to_read_tracker", message });
@@ -71,8 +70,7 @@ nichesRouter.post("/", async (req, res) => {
 
   // Ensure unique slug
   try {
-    const raw = await fs.readFile(TRACKER_JSON, "utf8");
-    const tracker = JSON.parse(raw) as {
+    const tracker = (await loadTracker()) as unknown as {
       industries: { id?: string; slug?: string }[];
     };
     const existing = new Set(
@@ -130,8 +128,7 @@ nichesRouter.post("/bulk/investigate", async (req, res) => {
     return;
   }
   try {
-    const raw = await fs.readFile(TRACKER_JSON, "utf8");
-    const tracker = JSON.parse(raw) as {
+    const tracker = (await loadTracker()) as unknown as {
       industries: { id: string; slug?: string; name: string; notes?: string; status: string }[];
     };
     const targets = slugs.map((slug) => {
@@ -230,8 +227,7 @@ nichesRouter.post("/:slug/investigate", async (req, res) => {
   const { slug } = req.params;
   try {
     // Look up the seed niche so we can pass its current name + notes as context
-    const raw = await fs.readFile(TRACKER_JSON, "utf8");
-    const tracker = JSON.parse(raw) as {
+    const tracker = (await loadTracker()) as unknown as {
       industries: { id: string; slug?: string; name: string; notes?: string; status: string }[];
     };
     const niche = tracker.industries.find((n) => n.id === slug || n.slug === slug);

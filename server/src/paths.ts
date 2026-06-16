@@ -19,6 +19,7 @@ export const NSP_STATE_DIR = FIXTURE_MODE
     path.join(HOME, "Library/Application Support/nsp-autopilot");
 
 export const TRACKER_JSON = path.join(NSP_STATE_DIR, "industry-tracker.json");
+export const TRACKER_SEED_JSON = path.join(NSP_STATE_DIR, "industry-tracker.seed.json");
 export const ORCH_STATE_JSON = path.join(NSP_STATE_DIR, "orchestrator-state.json");
 export const ORCH_LOCK = path.join(NSP_STATE_DIR, "orchestrator.lock");
 export const ORCH_LOGS_DIR = path.join(NSP_STATE_DIR, "orchestrator-logs");

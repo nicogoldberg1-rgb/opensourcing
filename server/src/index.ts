@@ -15,10 +15,14 @@ import { meRouter } from "./routes/me.js";
 import { requestsRouter } from "./routes/requests.js";
 import { AUTOPILOT_REPO, NSP_STATE_DIR } from "./paths.js";
 import { FIXTURE_MODE } from "./config.js";
+import { demoSessionMiddleware } from "./lib/demo-store.js";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// In demo mode, give each visitor a private in-memory sandbox (see demo-store).
+if (FIXTURE_MODE) app.use(demoSessionMiddleware);
 
 app.get("/api/health", (_req, res) => {
   res.json({

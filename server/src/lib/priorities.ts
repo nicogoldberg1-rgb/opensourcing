@@ -1,6 +1,8 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { FIXTURE_MODE } from "../config.js";
+import { getSessionPriorities, setSessionPriorities } from "./demo-store.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.resolve(__dirname, "../../data");
@@ -16,6 +18,7 @@ export type Lane = keyof Priorities;
 const EMPTY: Priorities = { approved: [], queued: [] };
 
 export async function loadPriorities(): Promise<Priorities> {
+  if (FIXTURE_MODE) return getSessionPriorities();
   try {
     const raw = await fs.readFile(PRIORITIES_FILE, "utf8");
     const parsed = JSON.parse(raw) as Partial<Priorities>;
@@ -30,6 +33,10 @@ export async function loadPriorities(): Promise<Priorities> {
 }
 
 export async function savePriorities(p: Priorities): Promise<void> {
+  if (FIXTURE_MODE) {
+    await setSessionPriorities(p);
+    return;
+  }
   await fs.mkdir(DATA_DIR, { recursive: true });
   await fs.writeFile(PRIORITIES_FILE, JSON.stringify(p, null, 2));
 }

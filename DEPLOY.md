@@ -46,9 +46,13 @@ Live cycle, Spend, Roadmap, Requests) has data. `…/api/health` returns
   `operator` (spend buttons become *"Request run"*) and redeploy.
 - **Free-tier sleep:** the service spins down after ~15 min idle; the first hit
   after that takes ~30–50s to wake. Fine for a demo.
-- **No persistence:** fixture writes (e.g. approving a niche) don't survive a
-  restart — the demo self-resets from the committed seed on every boot. That's
-  intended.
+- **Per-visitor sandbox:** each browser gets its own private, in-memory copy of
+  the mutable demo state (niche board, priorities, approval inbox, roadmap),
+  cloned fresh from the committed seed (see `server/src/lib/demo-store.ts`). So
+  one visitor's edits never leak to another, and everyone starts clean. Copies
+  auto-expire after ~2h idle and reset on restart. **Assumes a single instance**
+  (state is in memory) — fine on the free plan; if you ever scale to multiple
+  instances, switch to sticky sessions or a shared store (e.g. Redis).
 - If a build ever fails on Node version, the blueprint pins `NODE_VERSION=22`.
 - **If the service shows "Running" but every request hangs / times out:** the
   Blueprint may have created the service without kicking off a first build (it has
