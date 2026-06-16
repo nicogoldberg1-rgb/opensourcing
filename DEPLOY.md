@@ -11,14 +11,20 @@ The landing page links to the demo. Neither touches real data — the demo runs
 fixture mode only (fake data, no keys, no spend, no Claude). **Never deploy real
 mode to a public host.**
 
-> **Live status:** Landing page is **deployed** — `https://opensourcing.dev`
-> (Vercel project `opensourcing`, www → apex 308). **Render demo is NOT yet
-> connected** — that's the one remaining manual step (§1); until then the landing
-> page's "Open the demo" button 404s.
+> **Live status:** Both pieces are **live.** Landing page — `https://opensourcing.dev`
+> (Vercel project `opensourcing`, www → apex 308). Demo — `https://nsp-dashboard-demo.onrender.com`
+> (Render Blueprint connected, `autoDeploy` on, so pushes to `main` auto-rebuild
+> the demo; confirmed live 2026-06-15). The landing page's "Open the demo" button
+> resolves.
 
 ---
 
-## 1. Live demo on Render (the dashboard, fixture mode)
+## 1. Live demo on Render (the dashboard, fixture mode) — DONE
+
+**Status:** connected and live at `https://nsp-dashboard-demo.onrender.com`.
+`autoDeploy: true`, so every push to `main` rebuilds it (~2–4 min; free tier
+sleeps after ~15 min idle, ~30–50s cold start). The one-time setup below is kept
+for reference / re-creating the service.
 
 The blueprint is committed at repo root: [`render.yaml`](./render.yaml).
 
