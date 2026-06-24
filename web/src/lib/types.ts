@@ -49,6 +49,11 @@ export type Niche = {
   sequence_id?: number | null;
   companies_contacted?: number;
   response_rate?: number | null;
+  deliveries?: number;
+  replies?: number;
+  opens?: number;
+  reply_rate?: number | null;
+  open_rate?: number | null;
   business_type?: string;
   buy_box?: BuyBox;
   created?: string;

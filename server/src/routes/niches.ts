@@ -9,6 +9,7 @@ import { executeRunCycle } from "../lib/executors.js";
 import { resolveIdentity } from "../lib/roles.js";
 import { createRequest } from "../lib/requests.js";
 import { FIXTURE_MODE } from "../config.js";
+import { fetchCampaigns } from "../lib/reply.js";
 
 function slugify(name: string): string {
   return name
@@ -48,7 +49,40 @@ async function loadReveal(slug: string, name: string): Promise<Investigation> {
 
 nichesRouter.get("/", async (_req, res) => {
   try {
-    res.json(await loadTracker());
+    const tracker = await loadTracker() as {
+      metadata?: Record<string, unknown>;
+      industries: Record<string, unknown>[];
+    };
+
+    // Join Reply.io outcome stats onto each niche by sequence_id
+    let campaignMap: Map<number, { reply_rate: number | null; open_rate: number | null; deliveries: number; replies: number; opens: number }> | null = null;
+    try {
+      const campaigns = await fetchCampaigns();
+      campaignMap = new Map(campaigns.map((c) => {
+        const deliveries = c.deliveriesCount ?? 0;
+        return [c.id, {
+          deliveries,
+          replies: c.repliesCount ?? 0,
+          opens: c.opensCount ?? 0,
+          reply_rate: deliveries > 0 ? (c.repliesCount ?? 0) / deliveries : null,
+          open_rate: deliveries > 0 ? (c.opensCount ?? 0) / deliveries : null,
+        }];
+      }));
+    } catch {
+      // Non-fatal: return tracker without enrichment if Reply.io is unavailable
+    }
+
+    if (campaignMap) {
+      tracker.industries = tracker.industries.map((n) => {
+        const seqId = typeof n.sequence_id === "number" ? n.sequence_id : null;
+        if (!seqId) return n;
+        const stats = campaignMap!.get(seqId);
+        if (!stats) return n;
+        return { ...n, ...stats };
+      });
+    }
+
+    res.json(tracker);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     res.status(500).json({ error: "failed_to_read_tracker", message });
