@@ -13,6 +13,7 @@ import { spendRouter } from "./routes/spend.js";
 import { roadmapRouter } from "./routes/roadmap.js";
 import { meRouter } from "./routes/me.js";
 import { requestsRouter } from "./routes/requests.js";
+import { verifyRouter } from "./routes/verify.js";
 import { AUTOPILOT_REPO, NSP_STATE_DIR } from "./paths.js";
 import { FIXTURE_MODE } from "./config.js";
 
@@ -38,6 +39,7 @@ app.use("/api/spend", spendRouter);
 app.use("/api/roadmap", roadmapRouter);
 app.use("/api/me", meRouter);
 app.use("/api/requests", requestsRouter);
+app.use("/api/verify", verifyRouter);
 
 // Production: serve the built SPA from web/dist on the same origin as the API.
 // In dev, web/dist doesn't exist (Vite serves the frontend and proxies /api),
