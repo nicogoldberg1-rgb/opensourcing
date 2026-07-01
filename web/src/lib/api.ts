@@ -14,6 +14,7 @@ import type {
   RoadmapColumn,
   SequencesPayload,
   SequenceDetail,
+  QAResult,
   SpendPayload,
   Tracker,
 } from "./types";
@@ -88,6 +89,8 @@ export const api = {
   getSpend: () => jsonFetch<SpendPayload>("/api/spend"),
   getSequenceDetail: (id: number) =>
     jsonFetch<SequenceDetail>(`/api/sequences/${id}/detail`),
+  getSequenceQA: (id: number) =>
+    jsonFetch<QAResult>(`/api/sequences/${id}/qa`),
 
   getPriorities: () => jsonFetch<Priorities>("/api/priorities"),
   setLaneOrder: (lane: "approved" | "queued", order: string[]) =>

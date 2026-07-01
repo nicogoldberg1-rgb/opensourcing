@@ -109,3 +109,90 @@ sequencesRouter.get("/:id/detail", async (req, res) => {
     res.status(500).json({ error: "sequence_detail_failed", message });
   }
 });
+
+export type QACheckStatus = "pass" | "fail" | "warn";
+export type QACheck = { id: string; label: string; status: QACheckStatus; detail?: string };
+export type QAResult = { checks: QACheck[]; passed: number; failed: number; warned: number };
+
+function runQA(campaign: ReplyCampaign, detail: Awaited<ReturnType<typeof getSequenceDetail>>): QAResult {
+  const checks: QACheck[] = [];
+
+  const steps = detail?.steps ?? [];
+  const contacts = campaign.peopleCount ?? 0;
+
+  checks.push(steps.length > 0
+    ? { id: "has_steps", label: "Sequence has steps", status: "pass" }
+    : { id: "has_steps", label: "Sequence has steps", status: "fail", detail: "No steps found — sequence is empty." });
+
+  checks.push(contacts > 0
+    ? { id: "has_contacts", label: `Contacts loaded (${contacts})`, status: "pass" }
+    : { id: "has_contacts", label: "Contacts loaded", status: "fail", detail: "No contacts in this sequence — import them before activating." });
+
+  const hasEmail = steps.some((s) => s.channel === "email");
+  checks.push(hasEmail
+    ? { id: "has_email_step", label: "Has at least one email step", status: "pass" }
+    : { id: "has_email_step", label: "Has at least one email step", status: "fail", detail: "No email steps found." });
+
+  const hasLinkedIn = steps.some((s) => s.channel === "linkedin");
+  checks.push(hasLinkedIn
+    ? { id: "has_linkedin_step", label: "Has LinkedIn connection step", status: "pass" }
+    : { id: "has_linkedin_step", label: "Has LinkedIn connection step", status: "warn", detail: "No LinkedIn step — consider adding one as step 1." });
+
+  const days = steps.map((s) => s.day);
+  const uniqueDays = new Set(days);
+  checks.push(uniqueDays.size === days.length
+    ? { id: "unique_days", label: "No duplicate step days", status: "pass" }
+    : { id: "unique_days", label: "No duplicate step days", status: "fail", detail: `Duplicate days found: ${days.filter((d, i) => days.indexOf(d) !== i).join(", ")}` });
+
+  const sorted = [...days].sort((a, b) => a - b);
+  const inOrder = days.every((d, i) => d === sorted[i]);
+  checks.push(inOrder
+    ? { id: "steps_ordered", label: "Steps in ascending day order", status: "pass" }
+    : { id: "steps_ordered", label: "Steps in ascending day order", status: "warn", detail: "Steps are not in day order — double-check sequencing." });
+
+  const brokenMerge: string[] = [];
+  for (const step of steps) {
+    const allBraces = step.body.match(/\{[^}]*\}|\{[^{]*/g) ?? [];
+    for (const m of allBraces) {
+      if (!m.startsWith("{{") || !m.endsWith("}}")) brokenMerge.push(`Step ${step.step}: "${m}"`);
+    }
+    if (/\{\{\s*\}\}/.test(step.body)) brokenMerge.push(`Step ${step.step}: empty merge field`);
+  }
+  checks.push(brokenMerge.length === 0
+    ? { id: "merge_fields", label: "No broken merge fields", status: "pass" }
+    : { id: "merge_fields", label: "No broken merge fields", status: "fail", detail: brokenMerge.join("; ") });
+
+  checks.push(detail?.sample_contact
+    ? { id: "sample_contact", label: "Sample contact present (preview works)", status: "pass" }
+    : { id: "sample_contact", label: "Sample contact present", status: "warn", detail: "No sample contact — preview won't render merge fields." });
+
+  const isDraft = campaign.status === 0;
+  checks.push(isDraft
+    ? { id: "is_draft", label: "Sequence is in Draft (not yet live)", status: "pass" }
+    : { id: "is_draft", label: "Sequence is in Draft", status: "warn", detail: `Status is "${STATUS_LABELS[campaign.status] ?? campaign.status}" — QA before activation only.` });
+
+  const passed = checks.filter((c) => c.status === "pass").length;
+  const failed = checks.filter((c) => c.status === "fail").length;
+  const warned = checks.filter((c) => c.status === "warn").length;
+  return { checks, passed, failed, warned };
+}
+
+sequencesRouter.get("/:id/qa", async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) {
+    res.status(400).json({ error: "invalid_sequence_id" });
+    return;
+  }
+  try {
+    const [campaigns, detail] = await Promise.all([fetchCampaigns(), getSequenceDetail(id)]);
+    const campaign = campaigns.find((c) => c.id === id);
+    if (!campaign) {
+      res.status(404).json({ error: "sequence_not_found", id });
+      return;
+    }
+    res.json(runQA(campaign, detail));
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: "qa_failed", message });
+  }
+});
