@@ -117,12 +117,14 @@ export async function resolveMailHosts(domain: string): Promise<string[]> {
   try {
     const mx = await dns.resolveMx(domain);
     const hosts = mx
-      .filter((m) => m.exchange)
+      .filter((m) => m.exchange && m.exchange !== ".")
       .sort((a, b) => a.priority - b.priority)
       .map((m) => m.exchange);
     if (hosts.length) return hosts;
+    if (mx.length) return []; // null MX (RFC 7505, "MX 0 .") — an explicit "this domain
+    // accepts no mail"; RFC 5321 forbids the A/AAAA fallback when an MX RRset exists
   } catch {
-    // fall through to A/AAAA
+    // no MX RRset — implicit MX below (A/AAAA, RFC 5321 §5.1)
   }
   try {
     await dns.resolve4(domain);
@@ -155,9 +157,10 @@ function connectSmtp(host: string, port: number, timeoutMs: number): Promise<Smt
     const replyLines: string[] = [];
     let onReply: ((r: { code: number; text: string }) => void) | null = null;
     let onError: ((e: Error) => void) | null = (e) => reject(e); // until greeting arrives
-    let settled = false;
+    let dead: Error | null = null; // once set, every further send() rejects immediately
 
     const fail = (e: Error) => {
+      if (!dead) dead = e;
       const cb = onError;
       onError = null;
       onReply = null;
@@ -186,9 +189,10 @@ function connectSmtp(host: string, port: number, timeoutMs: number): Promise<Smt
     });
     socket.on("error", (e) => fail(e instanceof Error ? e : new Error(String(e))));
     socket.on("timeout", () => fail(new Error("smtp_timeout")));
-    socket.on("close", () => {
-      if (!settled) fail(new Error("smtp_closed"));
-    });
+    // ALWAYS fail on close: a server that FINs mid-conversation (tarpit / anti-harvest
+    // behavior on RCPT probes) must reject the in-flight send(), or that promise never
+    // settles and the whole batch hangs forever. fail() is a no-op when nothing pends.
+    socket.on("close", () => fail(new Error("smtp_closed")));
 
     // First reply must be the 220 greeting.
     onReply = (r) => {
@@ -196,11 +200,15 @@ function connectSmtp(host: string, port: number, timeoutMs: number): Promise<Smt
         fail(new Error(`smtp_greeting_${r.code}`));
         return;
       }
-      settled = true;
       onError = null;
       resolve({
         send: (line: string) =>
           new Promise((res, rej) => {
+            // A dead/destroyed socket swallows writes silently (no 'error' event, and
+            // its inactivity timer is gone) — without this guard a send() issued after
+            // the server dropped the connection would pend forever and hang the batch.
+            if (dead) { rej(dead); return; }
+            if (socket.destroyed) { rej(new Error("smtp_closed")); return; }
             onReply = res;
             onError = rej;
             socket.write(line + "\r\n");
@@ -214,6 +222,10 @@ function connectSmtp(host: string, port: number, timeoutMs: number): Promise<Smt
   });
 }
 
+// RCPT acceptance = 250/251 only (251 = "will forward"). Other 2xx replies (e.g. 221
+// "closing channel") are NOT mailbox confirmations and fall through to `unknown`.
+const rcptAccepted = (code: number | null): boolean => code === 250 || code === 251;
+
 export function classifyFromCodes(
   realCode: number | null,
   randomCode: number | null,
@@ -221,8 +233,8 @@ export function classifyFromCodes(
   if (realCode === null) {
     return { status: "unknown", catchAll: false, reason: "no SMTP response from server" };
   }
-  if (realCode >= 200 && realCode < 300) {
-    if (randomCode !== null && randomCode >= 200 && randomCode < 300) {
+  if (rcptAccepted(realCode)) {
+    if (rcptAccepted(randomCode)) {
       return {
         status: "catch-all",
         catchAll: true,
@@ -256,7 +268,8 @@ async function verifyDomain(
 ): Promise<VerifyResult[]> {
   const hosts = await resolveMailHosts(domain);
   if (!hosts.length) {
-    return emails.map((e) => result(e, "undeliverable", "domain has no MX or A record"));
+    return emails.map((e) =>
+      result(e, "undeliverable", "domain has no mail server (no MX or A/AAAA record, or a null MX declaring it accepts no mail)"));
   }
 
   // Try MX hosts in preference order until one accepts a connection.
@@ -280,10 +293,27 @@ async function verifyDomain(
   }
 
   try {
-    await client.send(`EHLO ${opts.fromDomain}`);
-    await client.send(`MAIL FROM:<${opts.fromAddress}>`);
+    // A rejected EHLO/HELO or MAIL FROM means the server refused OUR PROBE (DNSBL'd
+    // source IP, sender-domain policy, tarpit) and never evaluated any mailbox —
+    // classify unknown/unconfirmed, NEVER undeliverable, or good contacts would be
+    // silently suppressed downstream by the gate.
+    const ehlo = await client.send(`EHLO ${opts.fromDomain}`);
+    if (!(ehlo.code >= 200 && ehlo.code < 300)) {
+      const helo = await client.send(`HELO ${opts.fromDomain}`);
+      if (!(helo.code >= 200 && helo.code < 300)) {
+        const reason = `server rejected EHLO/HELO (SMTP ${helo.code}) — probe refused before any mailbox was evaluated`;
+        return emails.map((e) => result(e, "unknown", reason, { mx: usedHost, smtp_code: helo.code }));
+      }
+    }
+    const mailFrom = await client.send(`MAIL FROM:<${opts.fromAddress}>`);
+    if (!(mailFrom.code >= 200 && mailFrom.code < 300)) {
+      const status: VerifyStatus =
+        mailFrom.code >= 400 && mailFrom.code < 500 ? "unconfirmed" : "unknown";
+      const reason = `server rejected MAIL FROM (SMTP ${mailFrom.code}) — sender/policy rejection; mailboxes were never evaluated`;
+      return emails.map((e) => result(e, status, reason, { mx: usedHost, smtp_code: mailFrom.code }));
+    }
 
-    // Catch-all probe: a random local-part. 2xx here means the server accepts anything.
+    // Catch-all probe: a random local-part. Acceptance here means the server accepts anything.
     let randomCode: number | null = null;
     try {
       const r = await client.send(`RCPT TO:<${randomLocalPart()}@${domain}>`);
@@ -295,14 +325,27 @@ async function verifyDomain(
     const out: VerifyResult[] = [];
     for (const email of emails) {
       let realCode: number | null = null;
+      let senderRejected: number | null = null;
       try {
         // RSET keeps each RCPT an independent test on the same connection.
         await client.send("RSET");
-        await client.send(`MAIL FROM:<${opts.fromAddress}>`);
-        const r = await client.send(`RCPT TO:<${email}>`);
-        realCode = r.code;
+        const mf = await client.send(`MAIL FROM:<${opts.fromAddress}>`);
+        if (!(mf.code >= 200 && mf.code < 300)) {
+          senderRejected = mf.code; // mid-session throttle/policy — mailbox never evaluated
+        } else {
+          const r = await client.send(`RCPT TO:<${email}>`);
+          realCode = r.code;
+        }
       } catch {
         realCode = null;
+      }
+      if (senderRejected !== null) {
+        const status: VerifyStatus =
+          senderRejected >= 400 && senderRejected < 500 ? "unconfirmed" : "unknown";
+        out.push(result(email, status,
+          `server rejected MAIL FROM (SMTP ${senderRejected}) — sender/policy rejection; mailbox never evaluated`,
+          { mx: usedHost, smtp_code: senderRejected }));
+        continue;
       }
       const { status, catchAll, reason } = classifyFromCodes(realCode, randomCode);
       out.push(result(email, status, reason, { mx: usedHost, smtp_code: realCode, catch_all: catchAll }));

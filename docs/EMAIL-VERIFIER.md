@@ -39,8 +39,9 @@ Every result carries a `verifalia` string whose value `deliverability_gate._clas
 buckets identically — so the verifier's JSON output feeds the **existing gate unchanged**:
 
 ```bash
-# in the dashboard repo
-npm --prefix server run verify -- --gate a@x.com b@y.com > contacts.json
+# in the dashboard repo  (--silent keeps npm's run-script banner out of the JSON —
+# without it deliverability_gate.py dies on the non-JSON first line)
+npm --prefix server run --silent verify -- --gate a@x.com b@y.com > contacts.json
 # in the engine repo
 python3 lib/deliverability_gate.py check contacts.json   # exits non-zero if unsafe to send
 ```
@@ -60,7 +61,7 @@ POST /api/verify   { "emails": ["a@x.com"] } # batch (max 500)
 ```bash
 npm run verify -- a@x.com b@y.com      # pretty table
 npm run verify -- --json a@x.com       # full JSON
-npm run verify -- --gate a@x.com       # gate-shaped contact list (feed deliverability_gate.py)
+npm run --silent verify -- --gate a@x.com   # gate-shaped contact list (--silent when piping to a file/the gate)
 ```
 
 **Library**

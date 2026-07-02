@@ -27,11 +27,15 @@ test("checkSyntax rejects junk", () => {
 
 test("classifyFromCodes maps SMTP codes to the right verdict", () => {
   assert.equal(classifyFromCodes(250, 550).status, "deliverable"); // mailbox yes, random no
+  assert.equal(classifyFromCodes(251, 550).status, "deliverable"); // 251 "will forward" counts
   assert.equal(classifyFromCodes(250, 250).status, "catch-all"); // random also accepted
   assert.equal(classifyFromCodes(250, 250).catchAll, true);
   assert.equal(classifyFromCodes(550, 550).status, "undeliverable");
   assert.equal(classifyFromCodes(451, null).status, "unconfirmed"); // greylist
   assert.equal(classifyFromCodes(null, null).status, "unknown"); // no response
+  // only 250/251 confirm a mailbox — other 2xx (e.g. 221 "closing channel") must not
+  assert.equal(classifyFromCodes(221, null).status, "unknown");
+  assert.equal(classifyFromCodes(250, 221).status, "deliverable"); // weird 2xx on the random probe isn't catch-all proof
 });
 
 // Mirror of engine repo lib/deliverability_gate.py `_classify` (June 2026 version).
