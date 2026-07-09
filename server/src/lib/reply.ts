@@ -6,7 +6,8 @@ import { FIXTURE_MODE } from "../config.js";
 import { DEMO_SEQUENCES_JSON } from "../paths.js";
 
 const REPLY_BASE = "https://api.reply.io";
-const CACHE_TTL_MS = 30_000;
+const CACHE_TTL_MS = 5 * 60_000;
+const FETCH_TIMEOUT_MS = 3_000;
 
 let cachedKey: string | null | undefined;
 async function getKey(): Promise<string | null> {
@@ -105,15 +106,23 @@ export async function fetchCampaigns(): Promise<ReplyCampaign[]> {
   if (cache && Date.now() - cache.at < CACHE_TTL_MS) return cache.value;
   const key = await getKey();
   if (!key) throw new Error("reply_io_key_not_found");
-  const res = await fetch(`${REPLY_BASE}/v1/campaigns`, {
-    headers: { "X-Api-Key": key, accept: "application/json" },
-  });
-  if (!res.ok) {
-    throw new Error(`reply.io ${res.status}: ${await res.text()}`);
+  try {
+    const res = await fetch(`${REPLY_BASE}/v1/campaigns`, {
+      headers: { "X-Api-Key": key, accept: "application/json" },
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    });
+    if (!res.ok) {
+      throw new Error(`reply.io ${res.status}: ${await res.text()}`);
+    }
+    const data = (await res.json()) as ReplyCampaign[];
+    cache = { at: Date.now(), value: data };
+    return data;
+  } catch (err) {
+    // Serve stale stats rather than dropping enrichment when Reply.io is
+    // slow or briefly down; callers only see an error on a true cold miss.
+    if (cache) return cache.value;
+    throw err;
   }
-  const data = (await res.json()) as ReplyCampaign[];
-  cache = { at: Date.now(), value: data };
-  return data;
 }
 
 export function invalidateCache(): void {
