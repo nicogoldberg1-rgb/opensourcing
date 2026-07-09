@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc -p tsconfig.json",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "test": "node --import tsx --test src/lib/verify.test.ts",
+    "verify": "tsx src/verify-cli.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",
