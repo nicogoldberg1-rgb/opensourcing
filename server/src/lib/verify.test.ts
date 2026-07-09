@@ -14,7 +14,7 @@ import {
 } from "./verify.js";
 
 test("checkSyntax accepts normal addresses", () => {
-  for (const ok of ["a@b.com", "harry.yao@uchicago.edu", "x+tag@sub.example.co.uk"]) {
+  for (const ok of ["a@b.com", "first.last@example.com", "x+tag@sub.example.co.uk"]) {
     assert.equal(checkSyntax(ok), true, ok);
   }
 });

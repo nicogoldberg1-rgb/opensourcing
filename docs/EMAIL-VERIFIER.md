@@ -8,6 +8,19 @@ produces them from **DNS + a direct SMTP conversation, for free**, as a drop-in 
 
 No new dependencies — just Node's built-in `node:dns` and `node:net`.
 
+## Verifalia (paid) vs. this free verifier
+
+[Verifalia](https://verifalia.com) stays the default, higher-reliability path and is
+supported out of the box: it runs on dedicated infrastructure, so results are more
+consistent than a self-hosted SMTP probe (see limitations below). It's inexpensive,
+pay-as-you-go credits — a small cost for volume email checking.
+
+This built-in MX + SMTP verifier — contributed by Harry — is a **free alternative** for
+anyone who'd rather not sign up for a paid service. The tradeoff: many home/office
+networks block outbound port 25 (so you may see more `unknown` results), and heavy
+probing can affect sender reputation. Use the paid path when reliability matters; use
+this when you want zero cost.
+
 ## How it works
 
 For each address: syntax check → resolve the domain's **MX** (falls back to A/AAAA) →
