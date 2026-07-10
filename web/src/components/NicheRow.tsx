@@ -118,6 +118,19 @@ export const NicheRow = forwardRef<HTMLDivElement, NicheRowProps>(
                 </span>
               </>
             )}
+            {niche.deliveries != null && niche.deliveries > 0 && (
+              <>
+                <span className="text-neutral-300">·</span>
+                <span className="shrink-0 tabular-nums text-neutral-500" title={`${niche.deliveries} emails sent · ${niche.replies ?? 0} replies`}>
+                  {niche.deliveries} sent
+                  {niche.reply_rate != null && (
+                    <span className={niche.reply_rate >= 0.1 ? " text-emerald-600" : " text-neutral-500"}>
+                      {" "}· {(niche.reply_rate * 100).toFixed(0)}% replied
+                    </span>
+                  )}
+                </span>
+              </>
+            )}
           </div>
 
           {niche.notes && !tailwind && (
