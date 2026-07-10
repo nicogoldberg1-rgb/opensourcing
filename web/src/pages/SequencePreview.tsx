@@ -1,13 +1,43 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, UserPlus, Mail, FileText } from "lucide-react";
+import { ArrowLeft, UserPlus, Mail, FileText, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
 import { api } from "../lib/api";
-import type { SequenceDetail, SequenceStep } from "../lib/types";
+import type { QAResult, SequenceDetail, SequenceStep } from "../lib/types";
 import { Badge } from "../components/ui/Badge";
 import { Skeleton } from "../components/ui/Skeleton";
 
 function cleanName(name: string): string {
   return name.replace(/^TEST[_-]/i, "").replace(/[-_]\d{4}-\d{2}-\d{2}.*$/, "");
+}
+
+function QAPanel({ qa }: { qa: QAResult }) {
+  const allPass = qa.failed === 0 && qa.warned === 0;
+  const hasFailures = qa.failed > 0;
+  return (
+    <div className={`rounded-lg border px-5 py-4 shadow-sm ${hasFailures ? "border-red-200 bg-red-50" : allPass ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"}`}>
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-neutral-800">Pre-activation QA</h2>
+        <span className={`text-xs font-medium ${hasFailures ? "text-red-700" : allPass ? "text-emerald-700" : "text-amber-700"}`}>
+          {hasFailures ? `${qa.failed} issue${qa.failed === 1 ? "" : "s"} — fix before activating` : allPass ? "All checks passed — ready to activate" : `${qa.warned} warning${qa.warned === 1 ? "" : "s"} — review before activating`}
+        </span>
+      </div>
+      <ul className="space-y-1.5">
+        {qa.checks.map((c) => (
+          <li key={c.id} className="flex items-start gap-2 text-xs">
+            {c.status === "pass" && <CheckCircle size={14} className="mt-0.5 shrink-0 text-emerald-600" />}
+            {c.status === "fail" && <XCircle size={14} className="mt-0.5 shrink-0 text-red-600" />}
+            {c.status === "warn" && <AlertTriangle size={14} className="mt-0.5 shrink-0 text-amber-600" />}
+            <span>
+              <span className={`font-medium ${c.status === "fail" ? "text-red-800" : c.status === "warn" ? "text-amber-800" : "text-neutral-700"}`}>
+                {c.label}
+              </span>
+              {c.detail && <span className="ml-1 text-neutral-500">— {c.detail}</span>}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 
 const CHANNEL_META: Record<
@@ -22,14 +52,20 @@ const CHANNEL_META: Record<
 export default function SequencePreview() {
   const { id } = useParams();
   const [detail, setDetail] = useState<SequenceDetail | null>(null);
+  const [qa, setQA] = useState<QAResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let alive = true;
+    const numId = Number(id);
     api
-      .getSequenceDetail(Number(id))
+      .getSequenceDetail(numId)
       .then((d) => alive && setDetail(d))
       .catch((e) => alive && setError(String(e)));
+    api
+      .getSequenceQA(numId)
+      .then((q) => alive && setQA(q))
+      .catch(() => {});
     return () => {
       alive = false;
     };
@@ -86,6 +122,8 @@ export default function SequencePreview() {
               </p>
             )}
           </header>
+
+          {qa && <QAPanel qa={qa} />}
 
           {detail.steps.length === 0 ? (
             <div className="rounded-lg border border-dashed border-neutral-300 bg-white px-5 py-10 text-center text-sm text-neutral-500">

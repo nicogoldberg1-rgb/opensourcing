@@ -171,6 +171,10 @@ export type CycleSummary = {
   current_phase_num: number;
 };
 
+export type QACheckStatus = "pass" | "fail" | "warn";
+export type QACheck = { id: string; label: string; status: QACheckStatus; detail?: string };
+export type QAResult = { checks: QACheck[]; passed: number; failed: number; warned: number };
+
 export type RoadmapColumn = "idea" | "next_up" | "in_progress" | "shipped";
 
 export type RoadmapCard = {
