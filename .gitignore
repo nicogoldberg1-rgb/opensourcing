@@ -28,3 +28,7 @@ docs/ADAPTERS.md
 
 # incremental TS build cache (artifact, shouldn't be tracked)
 web/tsconfig.tsbuildinfo
+
+# sender: runtime receipts + python cache
+sender/receipts/
+__pycache__/

@@ -1,0 +1,5 @@
+{
+  "_comment": "copy of what `gmail_pipeline.py init` writes to ~/.config/apps-script-email-sender/config.json — DO NOT put the real secret in the repo",
+  "url": "https://script.google.com/macros/s/XXXX_DEPLOYMENT_ID_XXXX/exec",
+  "secret": "the-same-long-random-string-you-pasted-into-Code.gs"
+}

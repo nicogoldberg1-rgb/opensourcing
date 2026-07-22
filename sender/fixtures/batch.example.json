@@ -1,0 +1,14 @@
+[
+  {
+    "to": "you@example.com",
+    "subject": "[sender smoke test 1/2] Apps Script email sender",
+    "body": "This is smoke test 1 of 2 for the Apps Script email sender (Code.gs + CLI).\n\nReplace both 'to' addresses in this file with your own address before submitting. If you received this email (with the default attachment, if you configured DEFAULT_ATTACHMENT_FILE_ID), then draft creation, attachment handling, and scheduled cloud-side sending all work end to end.\n\nNothing to do - this only went to yourself.\n\n- the sender",
+    "firm": "SELF-TEST"
+  },
+  {
+    "to": "you.other@example.com",
+    "subject": "[sender smoke test 2/2] Apps Script email sender",
+    "body": "This is smoke test 2 of 2 for the Apps Script email sender (Code.gs + CLI), ideally sent to a second address you own on a different provider to confirm cross-provider delivery.\n\nReplace both 'to' addresses in this file with your own addresses before submitting. If you received this email, scheduled cloud-side sending works end to end.\n\nNothing to do - this only went to yourself.\n\n- the sender",
+    "firm": "SELF-TEST"
+  }
+]
